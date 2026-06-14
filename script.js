@@ -7,43 +7,43 @@ navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => na
 
 const products = {
   treats: [
-    { name: 'Blueberry Swiss Roll', emoji: '🫐', price: 'DM for price', thumb: '' },
-    { name: 'Orange Swiss Roll', emoji: '🍊', price: 'RM 10.50', thumb: 'b' },
-    { name: 'Matcha Strawberry Swiss Roll', emoji: '🍵', price: 'RM 10.50', thumb: 'a' },
-    { name: 'Mini Caramel Pudding', emoji: '🍮', price: 'DM for price', thumb: 'b' },
-    { name: 'Mini Chocolate Cake', emoji: '🍫', price: 'RM 6.50', thumb: '' },
-    { name: 'Mini Taro Cake', emoji: '💜', price: 'DM for price', thumb: 'a' },
-    { name: 'Mini Birthday Cake', emoji: '🎂', price: 'RM 6.50', thumb: 'b' },
+    { name: 'Matcha Strawberry Swiss Roll', img: 'matcha-strawberry', price: 'RM 10.50' },
+    { name: 'Orange Swiss Roll', img: 'orange-swiss', price: 'RM 10.50' },
+    { name: 'Blueberry Swiss Roll', img: 'blueberry-swiss', price: '' },
+    { name: 'Mini Chocolate Cake', img: 'mini-choc-cake', price: 'RM 6.50' },
+    { name: 'Mini Taro Cake', img: 'mini-taro-cake', price: '' },
+    { name: 'Mini Birthday Cake', img: 'mini-birthday-cake', price: 'RM 6.50' },
+    { name: 'Mini Caramel Pudding', img: 'caramel-pudding', price: '' },
   ],
   paws: [
-    { name: 'Mini Bear Keychain', emoji: '🐻', price: 'RM 10.50', sub: 'per piece', thumb: '' },
-    { name: 'Duck Keychain', emoji: '🐤', price: 'RM 6.50', thumb: 'a' },
-    { name: 'Grey Cat Keychain', emoji: '🐱', price: 'RM 6.50', thumb: 'b' },
-    { name: 'Black Cat Keychain', emoji: '🐈‍⬛', price: 'RM 6.50', thumb: '' },
-    { name: 'White Cat Keychain', emoji: '🐈', price: 'RM 6.50', thumb: 'a' },
-    { name: 'Baby Chick', emoji: '🐥', price: 'RM 5.50', thumb: 'b' },
-    { name: 'Mushy Mushroom', emoji: '🍄', price: 'RM 10.50', sub: 'custom hat colour & design', thumb: '' },
-    { name: 'Twin Tulip Keychain', emoji: '🌷', price: 'RM 5.50', thumb: 'a' },
+    { name: 'Mini Bear Keychain', img: 'mini-bear', price: 'RM 10.50', sub: 'per piece' },
+    { name: 'Mushy Mushroom', img: 'mushy-mushroom', price: 'RM 10.50', sub: 'custom hat colour & design' },
+    { name: 'Duck Keychain', img: 'duck', price: 'RM 6.50' },
+    { name: 'Grey Cat Keychain', img: 'grey-cat', price: 'RM 6.50' },
+    { name: 'Black Cat Keychain', img: 'black-cat', price: 'RM 6.50' },
+    { name: 'White Cat Keychain', img: 'white-cat', price: 'RM 6.50' },
+    { name: 'Baby Chick', img: 'baby-chick', price: 'RM 5.50' },
+    { name: 'Twin Tulip Keychain', img: 'twin-tulip', price: 'RM 5.50' },
   ],
   accessories: [
-    { name: 'Flower Bouquet', emoji: '💐', price: 'RM 5.50', thumb: 'a' },
-    { name: 'Hair Clip', emoji: '🌸', price: 'RM 3.50', thumb: '' },
-    { name: 'Scrunchie', emoji: '🎀', price: 'RM 4.00', sub: 'per piece', thumb: 'b' },
-    { name: 'Claw Clip', emoji: '🪻', price: 'RM 3.50', thumb: 'a' },
+    { name: 'Flower Bouquet', img: 'flower-bouquet', price: 'RM 5.50' },
+    { name: 'Scrunchie', img: 'scrunchie', price: 'RM 4.00', sub: 'per piece' },
+    { name: 'Hair Clip', img: 'hair-clip', price: 'RM 3.50' },
+    { name: 'Claw Clip', img: 'claw-clip', price: 'RM 3.50' },
   ],
 };
 
 function card(p) {
-  const thumbClass = p.thumb ? `card__thumb--${p.thumb}` : '';
-  const sub = p.sub ? `<span class="card__tag">${p.sub}</span>` : '';
-  const priceMain = p.price.startsWith('RM') ? p.price : `<span>${p.price}</span>`;
+  const sub = p.sub ? `<span class="card__sub">${p.sub}</span>` : '';
+  const price = p.price
+    ? `<span class="card__price">${p.price}</span>`
+    : `<span class="card__price card__price--dm">DM for price</span>`;
   return `
     <article class="card">
-      <div class="card__thumb ${thumbClass}">${p.emoji}</div>
+      <div class="card__media"><img src="images/${p.img}.jpg" alt="${p.name}" loading="lazy" /></div>
       <div class="card__body">
-        <h3 class="card__name">${p.name}</h3>
-        ${sub}
-        <div class="card__price">${priceMain}</div>
+        <div><span class="card__name">${p.name}</span>${sub}</div>
+        ${price}
       </div>
     </article>`;
 }
