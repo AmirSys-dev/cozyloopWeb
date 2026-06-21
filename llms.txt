@@ -1,0 +1,32 @@
+# Cozy Loop
+
+> Cozy Loop is a boutique handmade crochet studio run by designer-artisan **Joseph Paul** in **Segamat, Johor, Malaysia**. We stitch premium, calorie-free crochet treats, squishy keychains, and customizable accessories loop-by-loop.
+
+## Core Information
+- **Location:** Segamat, Johor, Malaysia
+- **Maker:** Joseph Paul
+- **Contact/Order Channel:** Instagram Direct Message [@cozyloop_2212](https://instagram.com/cozyloop_2212) or WhatsApp (+60123456789)
+- **Base Currency:** Malaysian Ringgit (MYR)
+- **Shipping Costs:**
+  - Peninsular Malaysia: RM 8.00 (Flat rate. Note: Delivery to East Malaysia - Sabah & Sarawak - is not supported)
+
+## Material Quality (E-E-A-T)
+- **Yarn:** Premium 100% Milk Cotton Yarn (80% cotton, 20% milk fiber). Hypo-allergenic, soft, baby-safe, and durable.
+- **Filling:** A-grade virgin Polyester Fiberfill. Springy and retains shape after wash.
+- **Metalware:** Stainless lobster clasps, phone straps, and snap clips.
+
+## Navigation & Pages
+- **[Home Page](https://cozyloop.my.id/)**: Showcase of best-selling creations, studio manifesto, and rotating scroll indicators.
+- **[Catalog / Shop](https://cozyloop.my.id/shop.html)**: Interactive product list of 22 creations categorized into:
+  - **Cozy Treats**: Cakes, rolls, flan puddings (RM 5.50 - RM 10.50)
+  - **Cozy Paws**: Cute animal keychains, mushy mushrooms (RM 5.50 - RM 10.50)
+  - **Accessories**: Scrunchies, hair clips, bouquets (RM 3.50 - RM 5.50)
+- **[Custom Commissions](https://cozyloop.my.id/custom.html)**: Custom order builder where customers design their own bespoke plushies or custom-colored creations.
+- **[About Page & Manifesto](https://cozyloop.my.id/about.html)**: The studio story of slow design, material guidelines, and Joseph Paul's knitting philosophy.
+- **[Shopping Basket & Checkout](https://cozyloop.my.id/cart.html)**: Shopping cart review with automated postage calculating and checkout sheet compilation.
+
+## How Orders Work
+1. Customer adds items or builds custom commissions.
+2. Customer fills details on checkout page.
+3. System compiles an order sheet and provides checkout buttons.
+4. Customer redirects to WhatsApp or Instagram with the order sheet copied to clipboard to complete payment via DuitNow QR.

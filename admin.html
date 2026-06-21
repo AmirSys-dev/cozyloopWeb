@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cozy Loop — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #F5F1EB;        /* Warm cream */
+      --surface: #EDE8E0;   /* Soft linen */
+      --card: #FFFFFF;      /* White card */
+      --brand: #7BAE7F;     /* Matcha green */
+      --brand-hover: #68A06E; /* Vivid matcha */
+      --white: #2C3E2D;     /* Dark olive text */
+      --text-secondary: #5E7160; /* Sage text */
+      --text-muted: #8FA695; /* Muted sage */
+      --border: rgba(44, 62, 45, 0.1);
+      --border-focus: rgba(123, 174, 127, 0.4);
+      --input-bg: #FFFFFF;
+      --input-border: rgba(44, 62, 45, 0.15);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg); color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 24px;
+    }
+    .admin-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; width: 100%; max-width: 560px; padding: 32px;
+      box-shadow: 0 24px 80px rgba(26, 46, 28, 0.08);
+    }
+    h1 {
+      font-size: 20px; font-weight: 590; letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .notice {
+      font-size: 13px; color: var(--text-secondary); line-height: 1.6;
+      border-left: 2px solid var(--brand); padding: 8px 12px;
+      background: rgba(123, 174, 127, 0.06); border-radius: 0 6px 6px 0;
+      margin: 16px 0 24px;
+    }
+    label {
+      display: block; font-size: 13px; font-weight: 590;
+      color: var(--white); margin-bottom: 4px; margin-top: 12px;
+    }
+    input, select, textarea {
+      width: 100%; padding: 8px 12px;
+      background: var(--input-bg); color: var(--white);
+      border: 1px solid var(--input-border); border-radius: 6px;
+      font-family: inherit; font-size: 13px; font-weight: 400;
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 2px rgba(123, 174, 127, 0.12);
+    }
+    textarea { resize: vertical; min-height: 80px; }
+    .row { display: flex; gap: 12px; }
+    .row > * { flex: 1; }
+    button[type="submit"] {
+      margin-top: 20px; width: 100%; height: 36px;
+      background: var(--brand); color: var(--white);
+      border: none; border-radius: 9999px; cursor: pointer;
+      font-family: inherit; font-size: 13px; font-weight: 510;
+      letter-spacing: 0.02em; text-transform: uppercase;
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: rgba(0,0,0,0) 0px 8px 2px 0px, rgba(0,0,0,0.01) 0px 5px 2px 0px, rgba(0,0,0,0.04) 0px 3px 2px 0px, rgba(0,0,0,0.07) 0px 1px 1px 0px, rgba(0,0,0,0.08) 0px 0px 1px 0px;
+    }
+    button[type="submit"]:hover {
+      background: var(--brand-hover);
+      transform: translateY(-1px);
+    }
+    #result {
+      margin-top: 12px; padding: 8px 12px;
+      border-radius: 6px; font-size: 13px; display: none;
+    }
+    #result.success { display: block; background: rgba(74,222,128,0.1); color: #4ADE80; border: 1px solid rgba(74,222,128,0.2); }
+    #result.error { display: block; background: rgba(239,68,68,0.1); color: #EF4444; border: 1px solid rgba(239,68,68,0.2); }
+  </style>
+</head>
+<body>
+  <div class="admin-card">
+    <h1>COZY LOOP — ADMIN</h1>
+    <div class="notice">Credentials are validated server-side via Basic Auth. The <code>X-Requested-With</code> header is required. Run behind HTTPS in production.</div>
+
+    <form id="productForm">
+      <div class="row">
+        <div>
+          <label for="adminUser">Admin user</label>
+          <input id="adminUser" name="adminUser" required autocomplete="username" />
+        </div>
+        <div>
+          <label for="adminPass">Admin pass</label>
+          <input id="adminPass" name="adminPass" type="password" required autocomplete="current-password" />
+        </div>
+      </div>
+
+      <label for="id">Product ID (slug, e.g. mini-bear)</label>
+      <input id="id" name="id" required pattern="[a-z0-9\-]+" />
+
+      <label for="name">Name</label>
+      <input id="name" name="name" required />
+
+      <label for="category">Category</label>
+      <select id="category" name="category">
+        <option value="treats">treats</option>
+        <option value="paws">paws</option>
+        <option value="accessories">accessories</option>
+        <option value="other">other</option>
+      </select>
+
+      <label for="price">Price (numeric)</label>
+      <input id="price" name="price" type="number" step="0.01" required />
+
+      <label for="desc">Description</label>
+      <textarea id="desc" name="desc" rows="4"></textarea>
+
+      <label for="size">Size</label>
+      <input id="size" name="size" />
+
+      <label for="materials">Materials</label>
+      <input id="materials" name="materials" />
+
+      <label for="image">Image (jpg/png/webp, max 2MB)</label>
+      <input id="image" name="image" type="file" accept="image/*" />
+
+      <button type="submit">Add product</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('productForm');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      result.className = ''; result.style.display = 'none';
+
+      const user = document.getElementById('adminUser').value.trim();
+      const pass = document.getElementById('adminPass').value;
+      if (!user || !pass) { showResult('Admin credentials required', false); return; }
+
+      const fd = new FormData();
+      fd.append('id', document.getElementById('id').value.trim());
+      fd.append('name', document.getElementById('name').value.trim());
+      fd.append('category', document.getElementById('category').value);
+      fd.append('price', document.getElementById('price').value);
+      fd.append('desc', document.getElementById('desc').value.trim());
+      fd.append('size', document.getElementById('size').value.trim());
+      fd.append('materials', document.getElementById('materials').value.trim());
+
+      const fileInput = document.getElementById('image');
+      if (fileInput.files && fileInput.files[0]) fd.append('image', fileInput.files[0]);
+
+      try {
+        const res = await fetch('/api/products', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Basic ' + btoa(user + ':' + pass),
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: fd
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showResult('Product added: ' + data.name, true);
+          form.reset();
+        } else {
+          showResult('Error: ' + (data.error || JSON.stringify(data)), false);
+        }
+      } catch (err) {
+        showResult('Network error: ' + err.message, false);
+      }
+    });
+
+    function showResult(msg, ok) {
+      result.textContent = msg;
+      result.className = ok ? 'success' : 'error';
+      result.style.display = 'block';
+    }
+  </script>
+</body>
+</html>

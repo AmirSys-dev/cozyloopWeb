@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ABOUT — COZY LOOP</title>
+  <meta name="description" content="The story of Cozy Loop. 100% handmade crochet treasures stitched loop-by-loop by Joseph Paul in Segamat, Johor, Malaysia." />
+  
+  <!-- SEO & Social Media Metadata -->
+  <meta property="og:title" content="ABOUT — COZY LOOP" />
+  <meta property="og:description" content="Tiny crochet treasures, stitched with technical precision. 100% handmade in Malaysia." />
+  <meta property="og:image" content="images/treats-hero.jpg" />
+  <meta property="og:type" content="website" />
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="images/logo.jpg" />
+
+  <!-- JSON-LD Structured Data for About Page -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "mainEntity": {
+      "@type": "Person",
+      "name": "Joseph Paul",
+      "jobTitle": "Crochet Artisan & Designer",
+      "knowsAbout": "Crochet, Knitting, Handmade Crafts, Fiber Art",
+      "description": "Founder and maker at Cozy Loop. Handcrafting unique crochet treats, keychains, and custom commission plushies in Segamat, Johor, Malaysia."
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Floating Navigation -->
+  <header class="nav" id="top">
+    <div class="container nav__inner">
+      <a class="brand" href="index.html">COZY LOOP <svg class="icon-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-left: 4px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"></path><path d="M12 2a15.3 15.3 0 0 0-4 10 15.3 15.3 0 0 0 4 10"></path><path d="M2 12h20"></path></svg></a>
+      
+      <!-- Floating Pill Navigation Container -->
+      <div class="nav__pill-container">
+        <nav class="nav__links" id="navLinks">
+          <a href="index.html">HOME</a>
+          <a href="about.html" class="active-pill">ABOUT</a>
+          <a href="shop.html">SHOP</a>
+          <a href="custom.html">CUSTOM</a>
+          <button class="nav__cart-link-btn" onclick="window.location.href='cart.html'" aria-label="Open Cart">
+            CART (<span id="cartCountNav">0</span>)
+          </button>
+        </nav>
+      </div>
+
+      <a href="https://instagram.com/cozyloop_2212" target="_blank" rel="noopener" class="nav__cta">INSTAGRAM</a>
+      <button class="nav__toggle" id="navToggle" aria-label="Open Menu"><svg class="icon-svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+    </div>
+  </header>
+
+  <!-- About Manifesto Header -->
+  <section class="about-hero" style="background: var(--bg-dark); color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding: var(--section-pad) 24px;">
+    <div class="container" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: center;">
+      <div>
+        <div class="gsap-reveal" style="font-family: var(--font-mono); font-size: 0.82rem; font-weight: 600; color: var(--brand-green); margin-bottom: 14px; letter-spacing: 0.08em;"><a href="index.html" style="text-decoration: underline; color: var(--brand-green);">HOME</a> / MANIFESTO</div>
+        <h1 class="giant-header gsap-fade" style="color: var(--text-primary); font-size: clamp(3rem, 8vw, 6rem); line-height: 1.05; margin: 0; text-transform: uppercase;">THE STORY</h1>
+        <p class="gsap-reveal" style="color: var(--text-secondary); font-size: 1.1rem; max-width: 28em; margin-top: 20px; font-weight: 400; line-height: 1.7;">Meet the hands looping art into shape, stitch-by-stitch in Segamat, Johor.</p>
+      </div>
+      <div class="gsap-scale" style="padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); position: relative; border-radius: var(--radius-lg); box-shadow: var(--shadow-glow);">
+        <div style="font-family: var(--font-mono); font-size: 0.82rem; font-weight: 600; color: var(--brand-green); margin-bottom: 10px; letter-spacing: 0.08em;">STUDIO STATEMENT</div>
+        <p style="font-family: var(--font-display); font-size: 1.3rem; line-height: 1.5; color: var(--text-primary); font-weight: 700;">"No repetition. No machines. Every loop tells a human story of time and patience."</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Story Section -->
+  <section class="about" id="about">
+    <div class="container about__inner">
+      <div class="about__photo-wrapper gsap-scale">
+        <img src="images/treats-hero.jpg" alt="A plate of assorted crochet treats" class="about__photo" loading="lazy" />
+        <div class="about__photo-overlay"></div>
+      </div>
+      <div class="about__text">
+        <span class="mono-label label-green gsap-reveal">THE Maker</span>
+        <h2 class="gsap-reveal">JOSEPH PAUL</h2>
+        <p class="about__lead gsap-reveal">Cozy Loop is a small independent crochet studio run by designer Joseph Paul in Segamat, Johor, Malaysia. Started out of a love for tactile fiber crafts, every item is looped and bound by hand.</p>
+        <p class="gsap-reveal">In a world saturated with generic mass-produced items and algorithm-generated designs, we believe in the physical value of a handmade keepsake. When you purchase from Cozy Loop, you receive a piece that holds hours of focused attention, care, and quality materials.</p>
+        
+        <div class="about__stats gsap-reveal">
+          <div class="stat-box">
+            <span class="stat-num">CRAFT</span>
+            <p class="stat-label">HAND-KNITTED</p>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num">COLOR</span>
+            <p class="stat-label">CUSTOM SHADES</p>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num">SHIPPING</span>
+            <p class="stat-label">PENINSULAR MSIA</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical Spec Section -->
+  <section class="yarn-specs" style="padding: var(--section-pad) 24px; border-bottom: 1px solid var(--border-color);">
+    <div class="container">
+      <div style="text-align: center; margin-bottom: 56px;">
+        <span class="mono-label label-green gsap-reveal">MATERIALS GUIDE</span>
+        <h2 style="margin-top: 16px; color: var(--text-primary);" class="gsap-reveal">YARN SPECIFICATIONS</h2>
+        <p style="font-weight: 400; max-width: 30em; margin: 14px auto 0; color: var(--text-secondary); line-height: 1.7;" class="gsap-reveal">We use high-grade materials to ensure durability, softness, and color vibrancy.</p>
+      </div>
+
+      <div class="table-container gsap-scale" style="overflow-x: auto; border: 1px solid var(--border-color); background: var(--bg-card); padding: 0; border-radius: var(--radius-md); overflow: hidden;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: var(--font-body);">
+          <thead>
+            <tr style="font-family: var(--font-mono); font-weight: 700; border-bottom: 2px solid var(--brand-green);">
+              <th style="padding: 18px 20px; border-right: 1px solid rgba(0,0,0,0.1); color: var(--black);">PROPERTY</th>
+              <th style="padding: 18px 20px; color: var(--black);">SPECIFICATION DETAILS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border-color); transition: background 0.3s;">
+              <td style="padding: 18px 20px; font-weight: 700; font-family: var(--font-mono); border-right: 1px solid var(--border-color); color: var(--text-primary); width: 30%;">MATERIAL</td>
+              <td style="padding: 18px 20px; color: var(--text-secondary); line-height: 1.6;">100% Milk Cotton Yarn (composed of 80% cotton and 20% milk fiber). Offers a silky touch and baby-safe hypo-allergenic properties.</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color); transition: background 0.3s;">
+              <td style="padding: 18px 20px; font-weight: 700; font-family: var(--font-mono); border-right: 1px solid var(--border-color); color: var(--text-primary);">PADDING FILL</td>
+              <td style="padding: 18px 20px; color: var(--text-secondary); line-height: 1.6;">Premium A-grade virgin Polyester Fiberfill. Maintains springiness, shape retention, and allows easy cleaning.</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color); transition: background 0.3s;">
+              <td style="padding: 18px 20px; font-weight: 700; font-family: var(--font-mono); border-right: 1px solid var(--border-color); color: var(--text-primary);">COLOR DYES</td>
+              <td style="padding: 18px 20px; color: var(--text-secondary); line-height: 1.6;">Reactive eco-friendly dyes with high colorfastness. Non-fading under normal daylight exposure.</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color); transition: background 0.3s;">
+              <td style="padding: 18px 20px; font-weight: 700; font-family: var(--font-mono); border-right: 1px solid var(--border-color); color: var(--text-primary);">WASH CARE</td>
+              <td style="padding: 18px 20px; color: var(--text-secondary); line-height: 1.6;">Handwash only in cold water with mild detergent. Air dry flat. Do not wring, tumble dry, iron, or bleach.</td>
+            </tr>
+            <tr>
+              <td style="padding: 18px 20px; font-weight: 700; font-family: var(--font-mono); border-right: 1px solid var(--border-color); color: var(--text-primary);">STITCH COUNT</td>
+              <td style="padding: 18px 20px; color: var(--text-secondary); line-height: 1.6;">High-density single crochet gauge (approx. 22 stitches per 10cm row) preventing stuffing leakage.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span class="footer__brand">COZY LOOP &copy;<span id="year">2026</span></span>
+      <p class="footer__dev">STITCHED BY JOSEPH PAUL &bull; WEB BY ANTIGRAVITY</p>
+      <div class="footer__links">
+        <a href="about.html">ABOUT</a>
+        <a href="shop.html">SHOP</a>
+        <a href="https://instagram.com/cozyloop_2212" target="_blank" rel="noopener">INSTAGRAM</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating Cart Button -->
+  <button class="floating-cart-btn" onclick="window.location.href='cart.html'" id="floatingCartBtn" aria-label="Open Shopping Basket">
+    <span class="icon" style="display: flex; align-items: center; justify-content: center; height: 100%;"><svg class="icon-svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg></span>
+    <span class="badge" id="floatingCartCount">0</span>
+  </button>
+
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

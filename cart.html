@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YOUR BASKET — COZY LOOP</title>
+  <meta name="description" content="Manage your Cozy Loop shopping basket. Standard handmade crochet keychains and custom designs ready for secure simulated DuitNow or card checkout." />
+  
+  <!-- SEO & Social Media Metadata -->
+  <meta property="og:title" content="YOUR BASKET — COZY LOOP" />
+  <meta property="og:description" content="View items in your basket and checkout secure. 100% handmade in Malaysia." />
+  <meta property="og:image" content="images/logo.jpg" />
+  <meta property="og:type" content="website" />
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="images/logo.jpg" />
+</head>
+<body>
+
+  <!-- Floating Navigation -->
+  <header class="nav" id="top">
+    <div class="container nav__inner">
+      <a class="brand" href="index.html">COZY LOOP <svg class="icon-svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-left: 4px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"></path><path d="M12 2a15.3 15.3 0 0 0-4 10 15.3 15.3 0 0 0 4 10"></path><path d="M2 12h20"></path></svg></a>
+      
+      <!-- Floating Pill Navigation Container -->
+      <div class="nav__pill-container">
+        <nav class="nav__links" id="navLinks">
+          <a href="index.html">HOME</a>
+          <a href="about.html">ABOUT</a>
+          <a href="shop.html">SHOP</a>
+          <a href="custom.html">CUSTOM</a>
+          <a href="cart.html" class="active-pill">CART (<span id="cartCountNav">0</span>)</a>
+        </nav>
+      </div>
+
+      <a href="https://instagram.com/cozyloop_2212" target="_blank" rel="noopener" class="nav__cta">INSTAGRAM</a>
+      <button class="nav__toggle" id="navToggle" aria-label="Open Menu"><svg class="icon-svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+    </div>
+  </header>
+
+  <!-- Cart Typographic Header -->
+  <section class="cart-hero" style="background: radial-gradient(ellipse at 50% 0%, rgba(94, 106, 210, 0.06) 0%, var(--bg-dark) 70%); color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding: var(--section-pad) 24px; position: relative;">
+    <div class="container" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 30px;">
+      <div>
+        <div class="gsap-reveal" style="font-family: var(--font-mono); font-size: 0.82rem; margin-bottom: 12px; color: var(--brand-green); letter-spacing: 0.08em;"><a href="index.html" style="text-decoration: underline; color: var(--brand-green);">HOME</a> / CHECKOUT-COUNTER</div>
+        <h1 class="giant-header gsap-fade" style="font-size: clamp(3rem, 10vw, 8rem); line-height: 0.95; margin: 8px 0 0; text-transform: uppercase;">YOUR BASKET</h1>
+      </div>
+      <div class="gsap-reveal" style="border: 1px solid var(--border-color); padding: 20px; background: var(--bg-card); box-shadow: var(--shadow-neon); font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; border-radius: var(--radius-md);">
+        <div style="margin-bottom: 4px; display: flex; gap: 24px; justify-content: space-between;">
+          <span style="color: var(--text-secondary);">STATUS:</span>
+          <span style="color: var(--white); background: var(--brand-green); padding: 1px 8px; border-radius: 4px;">ACTIVE</span>
+        </div>
+        <div style="display: flex; gap: 24px; justify-content: space-between;">
+          <span style="color: var(--text-secondary);">SHIPPING:</span>
+          <span style="color: var(--text-primary);">PENINSULAR MALAYSIA ONLY</span>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- Split Cart Layout -->
+  <section class="cart-layout" style="padding: var(--section-pad) 24px; border-bottom: 1px solid var(--border-color);">
+    <div class="container" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: start;">
+      
+      <!-- Left Column: Basket Items -->
+      <div class="cart-basket-panel" style="border: var(--border-width) solid var(--border-color); padding: 36px; background: var(--bg-card); border-color: var(--border-color); box-shadow: var(--shadow-brutal);">
+        <h2 style="font-size: 2rem; margin-bottom: 24px; border-bottom: var(--border-width) solid var(--border-color); padding-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+          <span>ITEMS IN BASKET</span>
+          <span class="mono-label" style="background: var(--brand-green); color: var(--white); padding: 2px 8px;" id="cartBadgeCount">0</span>
+        </h2>
+        
+        <div id="cartItemsContainer" style="display: flex; flex-direction: column; gap: 20px;">
+          <!-- Dynamically filled by script.js -->
+        </div>
+ 
+        <div id="cartEmptyState" style="text-align: center; padding: 48px 20px; display: none;">
+          <span style="font-size: 3.5rem; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; width: 100%;"><svg class="icon-svg" viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg></span>
+          <h2>YOUR BASKET IS EMPTY</h2>
+          <p style="margin: 8px 0 20px; opacity: 0.8;">Fill it up with handmade stitches from our catalog.</p>
+          <a class="btn btn--primary" href="shop.html" style="border-radius: 999px !important;">EXPLORE SHOP</a>
+        </div>
+ 
+        <!-- Summary Totals Block -->
+        <div id="cartSummaryBlock" style="margin-top: 36px; padding-top: 24px; border-top: var(--border-width) solid var(--border-color); display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.95rem;">
+            <span>SUBTOTAL:</span>
+            <span id="cartSubtotal" style="font-weight: 700;">RM 0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.95rem; color: #555;">
+            <span>SHIPPING:</span>
+            <span id="shippingChargeText" style="font-weight: 700;">RM 0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; border-top: 1px dashed var(--border-color); padding-top: 12px;">
+            <span>TOTAL:</span>
+            <span id="cartTotal" style="color: var(--white);">RM 0.00</span>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- Right Column: Checkout Multi-step Form -->
+      <div class="cart-checkout-panel" id="checkoutFlowContainer" style="border: var(--border-width) solid var(--border-color); padding: 36px; background: var(--bg-card); border-color: var(--border-color); box-shadow: var(--shadow-brutal); position: relative;">
+        
+        <!-- Steps Indicators -->
+        <div class="checkout-steps" style="display: flex; gap: 8px; margin-bottom: 28px; justify-content: space-between; border-bottom: var(--border-width) solid var(--border-color); padding-bottom: 12px;">
+          <div class="step active" id="stepIndicator1" style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; opacity: 0.5;">1. DETAILS</div>
+          <div class="step" id="stepIndicator2" style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; opacity: 0.5;">2. SUMMARY</div>
+        </div>
+ 
+        <!-- Step 1: Delivery Form -->
+        <div class="checkout-step-content" id="checkoutStep1">
+          <h2 style="font-size: 2rem; margin-bottom: 18px;">SHIPPING & DELIVERY <svg class="icon-svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-left: 6px;"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg></h2>
+          <form id="deliveryForm">
+            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+              <div class="form-group" style="display: flex; flex-direction: column;">
+                <label for="shipName" style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; margin-bottom: 6px;">FULL NAME</label>
+                <input type="text" id="shipName" required placeholder="e.g. Amir Syarif" style="padding: 10px; border: var(--border-width) solid var(--border-color); font-family: var(--font-mono);" />
+              </div>
+              <div class="form-group" style="display: flex; flex-direction: column;">
+                <label for="shipPhone" style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; margin-bottom: 6px;">WHATSAPP NUMBER</label>
+                <input type="tel" id="shipPhone" required placeholder="e.g. 0123456789" style="padding: 10px; border: var(--border-width) solid var(--border-color); font-family: var(--font-mono);" />
+              </div>
+            </div>
+            
+            <div class="form-group" style="display: flex; flex-direction: column; margin-bottom: 16px;">
+              <label for="shipAddress" style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; margin-bottom: 6px;">SHIPPING ADDRESS</label>
+              <input type="text" id="shipAddress" required placeholder="Street address, building, unit number" style="padding: 10px; border: var(--border-width) solid var(--border-color); font-family: var(--font-body);" />
+            </div>
+
+            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+              <div class="form-group" style="display: flex; flex-direction: column;">
+                <label for="shipPostcode" style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; margin-bottom: 6px;">POSTCODE</label>
+                <input type="text" id="shipPostcode" required placeholder="e.g. 50000" style="padding: 10px; border: var(--border-width) solid var(--border-color); font-family: var(--font-mono);" />
+              </div>
+              <div class="form-group" style="display: flex; flex-direction: column;">
+                <label for="shipCity" style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; margin-bottom: 6px;">CITY</label>
+                <input type="text" id="shipCity" required placeholder="e.g. Segamat" style="padding: 10px; border: var(--border-width) solid var(--border-color); font-family: var(--font-mono);" />
+              </div>
+            </div>
+
+            <div class="form-group" style="display: flex; flex-direction: column; margin-bottom: 24px;">
+              <label for="shipRegion" style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; margin-bottom: 6px;">DELIVERY STATE REGION</label>
+              <select id="shipRegion" style="padding: 10px; border: var(--border-width) solid var(--border-color); font-family: var(--font-mono);">
+                <option value="West">Peninsular Malaysia (Shipping: RM 8.00)</option>
+              </select>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;">
+              <button type="button" class="btn btn--primary btn--full" id="checkoutWhatsappBtn" style="width:100%; border-radius:999px !important; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                ORDER VIA WHATSAPP 
+                <svg class="icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="display: inline-block; vertical-align: middle;"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.968C16.692 2.012 14.221.99 11.635.99c-5.445 0-9.87 4.373-9.874 9.802-.001 1.84.49 3.63 1.42 5.181l-.995 3.637 3.86-.988zm13.111-7.234c-.29-.145-1.716-.848-1.98-.944-.263-.096-.455-.145-.646.145-.19.29-.738.944-.904 1.135-.167.19-.333.215-.623.07-2.904-1.453-4.783-2.986-5.466-4.161-.205-.353-.021-.544.152-.716.156-.156.333-.388.5-.581.167-.193.222-.328.333-.546.11-.22.055-.412-.027-.557-.082-.145-.646-1.56-.886-2.138-.233-.564-.47-.489-.646-.498-.167-.008-.358-.008-.55-.008-.19 0-.5.07-.762.36-.263.29-1.004.981-1.004 2.39 0 1.41 1.025 2.77 1.169 2.96.144.19 2.017 3.081 4.886 4.318.682.293 1.214.469 1.63.601.691.22 1.32.19 1.815.115.552-.083 1.716-.7 1.961-1.374.246-.673.246-1.251.173-1.374-.074-.124-.272-.19-.562-.337z"/></svg>
+              </button>
+              <button type="button" class="btn btn--secondary btn--full" id="checkoutInstagramBtn" style="width:100%; border-radius:999px !important; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                ORDER VIA INSTAGRAM
+                <svg class="icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle;"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+              </button>
+            </div>
+          </form>
+        </div>
+ 
+        <!-- Stitching Processing Spinner -->
+        <div class="checkout-loader hidden" id="checkoutLoader" style="position: absolute; inset: 0; background: var(--white); z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center;">
+          <div class="yarn-spinner" style="margin-bottom: 20px;">
+            <svg class="svg-yarn-spinner" viewBox="0 0 100 100" width="80" height="80">
+              <circle cx="50" cy="50" r="35" stroke="var(--black)" stroke-width="4" fill="none" stroke-dasharray="12 18" style="animation: spin 4s linear infinite; transform-origin: 50px 50px;" />
+              <path d="M 30 50 C 30 30, 70 30, 70 50 C 70 70, 30 70, 30 50" stroke="var(--brand-green)" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="100" stroke-dashoffset="100" style="animation: draw 2s ease-in-out infinite alternate;" />
+              <path d="M 20 80 L 75 25" stroke="var(--black)" stroke-width="5" fill="none" stroke-linecap="round" />
+              <path d="M 73 27 C 74 25, 76 25, 77 27" stroke="var(--black)" stroke-width="3" fill="none" stroke-linecap="round" />
+            </svg>
+          </div>
+          <h2>PROCESSING ORDER...</h2>
+          <p style="font-size: 0.95rem; opacity: 0.8; margin-top: 8px;">Processing transaction and compiling receipt codes. Please stand by.</p>
+        </div>
+ 
+        <!-- Step 2: Success Receipt Ticket -->
+        <div class="checkout-step-content hidden" id="checkoutStep2">
+          <div style="text-align: center; margin-bottom: 24px;">
+            <h2 style="font-size: 1.8rem; margin-bottom: 4px; display: inline-flex; align-items: center; gap: 8px; justify-content: center; width: 100%;"><svg class="icon-svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--success)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle;"><polyline points="20 6 9 17 4 12"></polyline></svg> ORDER CONFIRMED</h2>
+            <p style="font-size: 0.95rem; opacity: 0.8;">Your order sheet has been generated below.</p>
+          </div>
+ 
+          <div class="receipt-ticket" id="receiptTicket">
+            <div class="receipt-header" style="text-align: center; margin-bottom: 16px;">
+              <div class="receipt-brand" style="font-family: var(--font-display); font-size: 1.38rem; font-weight: 800; margin-bottom: 4px;">COZY LOOP <svg class="icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"></path><path d="M12 2a15.3 15.3 0 0 0-4 10 15.3 15.3 0 0 0 4 10"></path><path d="M2 12h20"></path></svg></div>
+              <div style="font-size: 0.88rem; opacity: 0.75; margin-bottom: 12px;">Handmade Crafts by Joseph Paul</div>
+              <div style="display: flex; flex-direction: column; gap: 2px; text-align: left; font-size: 0.88rem; border-top: 1px dashed var(--border-color); padding-top: 8px;">
+                <div><strong>ORDER ID:</strong> <span id="recOrderId">CL-2026-X</span></div>
+                <div><strong>DATE:</strong> <span id="recDate">Date</span></div>
+              </div>
+            </div>
+            
+            <div style="border-top: 1px dashed var(--border-color); margin: 12px 0;"></div>
+ 
+            <div style="margin-bottom: 12px;">
+              <div style="font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; margin-bottom: 4px; text-decoration: underline;">CUSTOMER DETAILS:</div>
+              <p id="recCustomerName" style="margin: 2px 0;">Name</p>
+              <p id="recCustomerPhone" style="margin: 2px 0;">Phone</p>
+              <p id="recCustomerAddress" style="margin: 2px 0;">Address</p>
+            </div>
+ 
+            <div style="border-top: 1px dashed var(--border-color); margin: 12px 0;"></div>
+ 
+            <div>
+              <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="border-bottom: 1px solid var(--border-color); font-weight: 700;">
+                    <th style="text-align: left; padding: 4px 0;">ITEM</th>
+                    <th style="text-align: center; padding: 4px 0; width: 40px;">QTY</th>
+                    <th style="text-align: right; padding: 4px 0; width: 70px;">TOTAL</th>
+                  </tr>
+                </thead>
+                <tbody id="receiptItemsBody">
+                  <!-- Rows inserted dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+            <div style="border-top: 1px dashed var(--border-color); margin: 12px 0;"></div>
+
+            <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end;">
+              <div style="width: 100%; display: flex; justify-content: space-between;">
+                <span>SUBTOTAL:</span>
+                <span id="recSubtotal">RM 0.00</span>
+              </div>
+              <div style="width: 100%; display: flex; justify-content: space-between;">
+                <span>DELIVERY:</span>
+                <span id="recShipping">RM 8.00</span>
+              </div>
+              <div style="width: 100%; display: flex; justify-content: space-between; font-weight: 700; border-top: 1px solid var(--border-color); padding-top: 4px; margin-top: 2px; background: var(--brand-green); border: var(--border-width) solid var(--border-color); padding: 4px; color: var(--white);">
+                <span>TOTAL PAID:</span>
+                <span id="recTotal">RM 0.00</span>
+              </div>
+            </div>
+
+            <div style="text-align: center; font-size: 0.88rem; opacity: 0.75; margin-top: 16px;">
+              <p>Thank you for supporting hand-knitted creations.</p>
+              <div class="watermark" style="font-size: 0.88rem; margin-top: 6px; border: 1px dashed rgba(255,255,255,0.08); padding: 4px; display: inline-block; background: var(--bg-card); color: var(--text-secondary);">COZY LOOP STUDIO • MALAYSIA</div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 12px; margin-top: 24px;">
+            <button class="btn btn--secondary" id="btnCopyReceipt" style="flex: 1; border-radius: 999px !important;">COPY INFO <svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-left: 4px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg></button>
+            <button class="btn btn--primary" id="btnSuccessDone" style="flex: 1.5; border-radius: 999px !important;">SHOP AGAIN <svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-left: 4px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"></path><path d="M12 2a15.3 15.3 0 0 0-4 10 15.3 15.3 0 0 0 4 10"></path><path d="M2 12h20"></path></svg></button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span class="footer__brand">COZY LOOP ©<span id="year">2026</span></span>
+      <p class="footer__dev">STITCHED BY JOSEPH PAUL • WEB BY ANTIGRAVITY</p>
+      <div class="footer__links">
+        <a href="about.html">ABOUT</a>
+        <a href="shop.html">SHOP</a>
+        <a href="https://instagram.com/cozyloop_2212" target="_blank" rel="noopener">INSTAGRAM</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

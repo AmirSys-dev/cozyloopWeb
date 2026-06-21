@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SHOP — COZY LOOP</title>
+  <meta name="description" content="Explore Cozy Loop's handmade crochet catalog. Custom plushies, keychain characters, dessert swiss rolls, and accessories." />
+  
+  <!-- SEO & Social Media Metadata -->
+  <meta property="og:title" content="Shop — Cozy Loop" />
+  <meta property="og:description" content="Explore Cozy Loop's handmade crochet catalog. 100% handmade in Malaysia." />
+  <meta property="og:image" content="images/mini-bear.jpg" />
+  <meta property="og:type" content="website" />
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="images/logo.jpg" />
+
+  <!-- JSON-LD Structured Data for E-Commerce Catalog -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Cozy Loop Handmade Crochet Catalog",
+    "description": "Handmade crochet treats, keychains, and accessories from our Segamat, Johor studio.",
+    "url": "https://cozyloop.my.id/shop.html",
+    "numberOfItems": "22",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Matcha Strawberry Swiss Roll",
+        "url": "https://cozyloop.my.id/shop.html"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Mini Bear Keychain",
+        "url": "https://cozyloop.my.id/shop.html"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Scrunchie",
+        "url": "https://cozyloop.my.id/shop.html"
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Floating Navigation -->
+  <header class="nav" id="top">
+    <div class="container nav__inner">
+      <a class="brand" href="index.html">COZY LOOP <svg class="icon-svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-left: 4px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"></path><path d="M12 2a15.3 15.3 0 0 0-4 10 15.3 15.3 0 0 0 4 10"></path><path d="M2 12h20"></path></svg></a>
+      
+      <!-- Floating Pill Navigation Container -->
+      <div class="nav__pill-container">
+        <nav class="nav__links" id="navLinks">
+          <a href="index.html">HOME</a>
+          <a href="about.html">ABOUT</a>
+          <a href="shop.html" class="active-pill">SHOP</a>
+          <a href="custom.html">CUSTOM</a>
+          <button class="nav__cart-link-btn" onclick="window.location.href='cart.html'" aria-label="Open Cart">
+            CART (<span id="cartCountNav">0</span>)
+          </button>
+        </nav>
+      </div>
+
+      <a href="https://instagram.com/cozyloop_2212" target="_blank" rel="noopener" class="nav__cta">INSTAGRAM</a>
+      <button class="nav__toggle" id="navToggle" aria-label="Open Menu"><svg class="icon-svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+    </div>
+  </header>
+
+  <!-- Shop Hero banner -->
+  <section class="hero hero--shop" style="background: radial-gradient(ellipse at 50% 0%, rgba(94, 106, 210, 0.06) 0%, var(--bg-dark) 70%); color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding: var(--section-pad) 24px;">
+    <div class="container" style="text-align: center;">
+      <h1 class="giant-header gsap-fade" style="font-size: clamp(3rem, 10vw, 8rem);">THE SHOP</h1>
+      <p class="gsap-reveal" style="font-weight: 500; max-width: 32em; margin: 16px auto 0; color: var(--text-secondary); line-height: 1.7;">Handmade crochet creations, keychains, and custom accessories.</p>
+    </div>
+  </section>
+
+  <!-- Shop Section -->
+  <section class="catalog" id="shop">
+    <div class="container">
+      <div class="section-head" style="margin-bottom: 40px; text-align: center;">
+        <span class="mono-label label-green gsap-reveal">PRODUCT GRID</span>
+        <h2 class="gsap-reveal">ALL CREATIONS</h2>
+        <p class="gsap-reveal" style="color: var(--text-secondary);">Select an item to customise and add to your basket.</p>
+      </div>
+
+      <!-- Shop Controls -->
+      <div class="shop-controls">
+        <div class="search-bar">
+          <span class="search-icon" style="display: flex; align-items: center; justify-content: center; height: 100%;"><svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
+          <input type="text" id="searchInput" placeholder="SEARCH CREATIONS..." aria-label="Search products" />
+        </div>
+        <div class="filter-tabs">
+          <button class="filter-btn active" data-category="all" aria-label="Show all categories">ALL</button>
+          <button class="filter-btn" data-category="treats" aria-label="Show cozy treats">DESSERTS</button>
+          <button class="filter-btn" data-category="paws" aria-label="Show cozy paws keychains">KEYCHAINS</button>
+          <button class="filter-btn" data-category="accessories" aria-label="Show accessories">ACCESSORIES</button>
+        </div>
+      </div>
+
+      <!-- Dynamic Products Grid -->
+      <div class="grid" id="shopGrid"></div>
+
+      <!-- Custom Request Banner -->
+      <div class="custom-order-banner" id="custom-banner">
+        <div class="custom-order-banner__content">
+          <span class="mono-label">BESPOKE SYSTEM</span>
+          <h3>COMMISSION A DESIGN</h3>
+          <p>Request specific colors, character shapes, or custom designs. Joseph will craft a custom crochet piece just for you.</p>
+          <button class="btn btn--primary" onclick="window.location.href='custom.html'" aria-label="Request custom crochet design">REQUEST CUSTOM DESIGN</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span class="footer__brand">COZY LOOP ©<span id="year">2026</span></span>
+      <p class="footer__dev">STITCHED BY JOSEPH PAUL • WEB BY ANTIGRAVITY</p>
+      <div class="footer__links">
+        <a href="about.html">ABOUT</a>
+        <a href="shop.html">SHOP</a>
+        <a href="https://instagram.com/cozyloop_2212" target="_blank" rel="noopener">INSTAGRAM</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Product Details Modal -->
+  <div class="modal" id="productModal" aria-hidden="true">
+    <div class="modal__overlay" id="productModalOverlay"></div>
+    <div class="modal__content">
+      <button class="modal__close" id="productModalCloseBtn" aria-label="Close details modal">&times;</button>
+      <div class="modal__body">
+        <div class="modal__gallery">
+          <img id="modalProductImg" src="images/logo.jpg" alt="Crochet product image" />
+        </div>
+        <div class="modal__details">
+          <div>
+            <h3 id="modalProductName">PRODUCT NAME</h3>
+            <span class="modal__price" id="modalProductPrice">RM 0.00</span>
+          </div>
+          
+          <p class="modal__desc" id="modalProductDesc">Product description details go here.</p>
+          
+          <div class="modal__meta">
+            <div><span class="meta-label">SIZE:</span> <span id="modalProductSize">N/A</span></div>
+            <div><span class="meta-label">YARN:</span> <span id="modalProductMaterials">N/A</span></div>
+          </div>
+
+          <div class="modal__options">
+            <div class="option-group">
+              <label for="modalOptionAttach">KEYCHAIN ATTACHMENT:</label>
+              <select id="modalOptionAttach" aria-label="Keychain attachment style">
+                <option value="None">NONE (PLUSHIE ONLY)</option>
+                <option value="Silver Ball Chain">SILVER BALL CHAIN (+RM 0.00)</option>
+                <option value="Lobster Clasp Keychain">LOBSTER CLASP KEYCHAIN (+RM 1.00)</option>
+                <option value="Pastel Phone Strap">PASTEL PHONE STRAP (+RM 0.50)</option>
+              </select>
+            </div>
+            <div class="option-group">
+              <label for="modalOptionNotes">COLOR REQUESTS / CUSTOM NOTES:</label>
+              <input type="text" id="modalOptionNotes" placeholder="e.g. Red ribbon, Custom details" aria-label="Custom notes" />
+            </div>
+          </div>
+
+          <div class="modal__purchase">
+            <div class="qty-selector">
+              <button class="qty-btn" id="modalQtyMinus" aria-label="Decrease quantity">-</button>
+              <span class="qty-val" id="modalQtyVal" aria-live="polite">1</span>
+              <button class="qty-btn" id="modalQtyPlus" aria-label="Increase quantity">+</button>
+            </div>
+            <button class="btn btn--primary" id="modalAddToCartBtn" aria-label="Add item to cart">ADD TO BASKET <svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-left: 6px;"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Cart Button -->
+  <button class="floating-cart-btn" onclick="window.location.href='cart.html'" id="floatingCartBtn" aria-label="Open Shopping Basket">
+    <span class="icon" style="display: flex; align-items: center; justify-content: center; height: 100%;"><svg class="icon-svg" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg></span>
+    <span class="badge" id="floatingCartCount">0</span>
+  </button>
+
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

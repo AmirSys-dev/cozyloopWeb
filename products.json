@@ -1,0 +1,195 @@
+[
+  {
+    "id": "matcha-strawberry",
+    "category": "treats",
+    "name": "Matcha Strawberry Swiss Roll",
+    "img": "matcha-strawberry",
+    "price": 10.50,
+    "desc": "A delightful slice of matcha roll cake with a sweet strawberry swirl, made with high-quality soft cotton yarn.",
+    "size": "Approx. 5cm x 4cm",
+    "materials": "100% Milk Cotton Yarn, Polyester Fiberfill"
+  },
+  {
+    "id": "orange-swiss",
+    "category": "treats",
+    "name": "Orange Swiss Roll",
+    "img": "orange-swiss",
+    "price": 10.50,
+    "desc": "A bright, citrusy orange-flavored slice of crochet swiss roll cake. Sweet and calorie-free!",
+    "size": "Approx. 5cm x 4cm",
+    "materials": "100% Milk Cotton Yarn, Polyester Fiberfill"
+  },
+  {
+    "id": "blueberry-swiss",
+    "category": "treats",
+    "name": "Blueberry Swiss Roll",
+    "img": "blueberry-swiss",
+    "price": 10.50,
+    "desc": "A delicious blueberry roll cake replica with details stitched to perfection.",
+    "size": "Approx. 5cm x 4cm",
+    "materials": "100% Milk Cotton Yarn, Polyester Fiberfill"
+  },
+  {
+    "id": "mini-choc-cake",
+    "category": "treats",
+    "name": "Mini Chocolate Cake",
+    "img": "mini-choc-cake",
+    "price": 5.50,
+    "desc": "A tiny slice of chocolate cake topped with a dollop of cream and a cherry on top.",
+    "size": "Approx. 4cm x 4cm",
+    "materials": "100% Milk Cotton Yarn, Polyester Fiberfill"
+  },
+  {
+    "id": "mini-taro-cake",
+    "category": "treats",
+    "name": "Mini Taro Cake",
+    "img": "mini-taro-cake",
+    "price": 6.50,
+    "desc": "A soft taro purple mini cake, layered with cream and textured stitches.",
+    "size": "Approx. 4.5cm x 4.5cm",
+    "materials": "100% Milk Cotton Yarn, Polyester Fiberfill"
+  },
+  {
+    "id": "mini-birthday-cake",
+    "category": "treats",
+    "name": "Mini Birthday Cake",
+    "img": "mini-birthday-cake",
+    "price": 6.50,
+    "desc": "A festive little cake with a stitched candle. Perfect birthday gift for a craft lover.",
+    "size": "Approx. 4.5cm x 6cm (with candle)",
+    "materials": "100% Milk Cotton Yarn, Polyester Fiberfill"
+  },
+  {
+    "id": "mini-caramel-pudding",
+    "category": "treats",
+    "name": "Mini Caramel Pudding",
+    "img": "caramel-pudding",
+    "price": 6.50,
+    "desc": "A cute little caramel flan pudding with cream on top. Looks incredibly soft and sweet.",
+    "size": "Approx. 4.5cm x 4cm",
+    "materials": "100% Milk Cotton Yarn, Polyester Fiberfill"
+  },
+  {
+    "id": "mini-bear",
+    "category": "paws",
+    "name": "Mini Bear Keychain",
+    "img": "mini-bear",
+    "price": 10.50,
+    "sub": "per piece",
+    "desc": "A cute chubby bear keychain with a red ribbon. Loop it on your backpack or keys!",
+    "size": "Approx. 6cm x 5cm",
+    "materials": "100% Milk Cotton Yarn, safety eyes, metal keychain ring"
+  },
+  {
+    "id": "mushy-mushroom",
+    "category": "paws",
+    "name": "Mushy Mushroom",
+    "img": "mushy-mushroom",
+    "price": 10.50,
+    "sub": "custom hat colour & design",
+    "desc": "A lovely mushroom with a cute cap. Customize the hat colour and design to your liking.",
+    "size": "Approx. 5.5cm x 4.5cm",
+    "materials": "100% Milk Cotton Yarn, Polyester Fiberfill, metal keychain ring"
+  },
+  {
+    "id": "duck",
+    "category": "paws",
+    "name": "Duck Keychain",
+    "img": "duck",
+    "price": 5.50,
+    "desc": "An adorable round duckling keychain, stitched in bright yellow cotton.",
+    "size": "Approx. 4.5cm x 4.5cm",
+    "materials": "100% Milk Cotton Yarn, safety eyes, metal keychain ring"
+  },
+  {
+    "id": "grey-cat",
+    "category": "paws",
+    "name": "Grey Cat Keychain",
+    "img": "grey-cat",
+    "price": 6.50,
+    "desc": "A round squishy grey kitty keychain. Soft, round, and full of purrfect details.",
+    "size": "Approx. 5cm x 5cm",
+    "materials": "100% Milk Cotton Yarn, safety eyes, metal keychain ring"
+  },
+  {
+    "id": "black-cat",
+    "category": "paws",
+    "name": "Black Cat Keychain",
+    "img": "black-cat",
+    "price": 6.50,
+    "desc": "A black kitten keychain with a striking gold patch around one eye. A mysterious little helper for your keys.",
+    "size": "Approx. 5cm x 5cm",
+    "materials": "100% Milk Cotton Yarn, safety eyes, metal keychain ring"
+  },
+  {
+    "id": "white-cat",
+    "category": "paws",
+    "name": "White Cat Keychain",
+    "img": "white-cat",
+    "price": 6.50,
+    "desc": "A pure white kitten keychain with sweet sleepy features. Round and squishy.",
+    "size": "Approx. 5cm x 5cm",
+    "materials": "100% Milk Cotton Yarn, safety eyes, metal keychain ring"
+  },
+  {
+    "id": "baby-chick",
+    "category": "paws",
+    "name": "Baby Chick",
+    "img": "baby-chick",
+    "price": 5.50,
+    "desc": "A tiny baby chick popping out, complete with cute little orange cheeks and safety eyes.",
+    "size": "Approx. 4cm x 4cm",
+    "materials": "100% Milk Cotton Yarn, safety eyes, phone strap/keychain"
+  },
+  {
+    "id": "twin-tulip",
+    "category": "paws",
+    "name": "Twin Tulip Keychain",
+    "img": "twin-tulip",
+    "price": 5.50,
+    "desc": "Two pastel tulips hanging together. A beautiful, delicate bag charm that adds a floral touch.",
+    "size": "Tulip heads approx. 3cm each",
+    "materials": "100% Milk Cotton Yarn, metal keychain ring"
+  },
+  {
+    "id": "flower-bouquet",
+    "category": "accessories",
+    "name": "Flower Bouquet",
+    "img": "flower-bouquet",
+    "price": 5.50,
+    "desc": "A mini everlasting crochet bouquet. Sunflowers, daisies, and lavender that never wilt.",
+    "size": "Approx. 18cm long",
+    "materials": "100% Milk Cotton Yarn, flower stems, wrapping paper, ribbon"
+  },
+  {
+    "id": "scrunchie",
+    "category": "accessories",
+    "name": "Scrunchie",
+    "img": "scrunchie",
+    "price": 4.00,
+    "sub": "per piece",
+    "desc": "Soft and stretchy crochet hair scrunchie. Gentle on hair and looks lovely on the wrist too.",
+    "size": "Standard elastic, approx. 10cm diameter",
+    "materials": "100% Milk Cotton Yarn, elastic band"
+  },
+  {
+    "id": "hair-clip",
+    "category": "accessories",
+    "name": "Hair Clip",
+    "img": "hair-clip",
+    "price": 3.50,
+    "desc": "A cute crochet cherry, flower, or strawberry decoration stitched securely onto a metal clip.",
+    "size": "Approx. 6cm length",
+    "materials": "100% Milk Cotton Yarn, metal snap clip"
+  },
+  {
+    "id": "claw-clip",
+    "category": "accessories",
+    "name": "Claw Clip",
+    "img": "claw-clip",
+    "price": 3.50,
+    "desc": "A mini hair claw clip wrapped or decorated with adorable crochet elements.",
+    "size": "Approx. 5cm length",
+    "materials": "100% Milk Cotton Yarn, plastic claw clip"
+  }
+]

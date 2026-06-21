@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+Disallow: /products.json
+
+# Allow AI crawlers to discover modern LLMs text files
+Allow: /llms.txt
+
+# Update this with your actual production domain after deployment
+Sitemap: https://cozyloop.my.id/sitemap.xml

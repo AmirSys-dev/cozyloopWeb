@@ -4,123 +4,286 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cozy Loop — Handmade Crochet by Joseph Paul</title>
-  <meta name="description" content="Cozy Loop — handmade crochet treats, animal keychains and accessories, looped by hand by Joseph Paul. Order via Instagram @cozyloop_2212." />
-  <meta property="og:title" content="Cozy Loop — Handmade Crochet" />
-  <meta property="og:description" content="Tiny crochet treasures, made by hand." />
+  <meta name="description" content="Cozy Loop — Handmade crochet treats, keychains, and accessories by Joseph Paul. Custom orders welcome. Shipped from Segamat, Johor, Malaysia." />
+  
+  <!-- SEO & Social Media Metadata -->
+  <meta property="og:title" content="Cozy Loop — Handmade Crochet by Joseph Paul" />
+  <meta property="og:description" content="Tiny crochet treasures, stitched with love and care. 100% handmade in Malaysia." />
   <meta property="og:image" content="images/mini-bear.jpg" />
+  <meta property="og:type" content="website" />
+  
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+  
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="images/logo.jpg" />
+
+  <!-- JSON-LD Structured Data for Local SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    "name": "Cozy Loop",
+    "description": "Handmade crochet treats, keychains, and accessories by Joseph Paul.",
+    "url": "https://cozyloop.my.id/",
+    "logo": "https://cozyloop.my.id/images/logo.jpg",
+    "image": "https://cozyloop.my.id/images/logo.jpg",
+    "telephone": "+60123456789",
+    "priceRange": "$$",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Segamat",
+      "addressRegion": "Johor",
+      "addressCountry": "MY"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "2.5028",
+      "longitude": "102.8158"
+    },
+    "sameAs": [
+      "https://instagram.com/cozyloop_2212"
+    ],
+    "offers": {
+      "@type": "AggregateOffer",
+      "priceCurrency": "MYR",
+      "lowPrice": "3.50",
+      "highPrice": "15.00",
+      "offerCount": "22"
+    }
+  }
+  </script>
 </head>
 <body>
+
+  <!-- Floating Navigation -->
   <header class="nav" id="top">
     <div class="container nav__inner">
-      <a class="brand" href="#top">Cozy&nbsp;Loop</a>
-      <nav class="nav__links" id="navLinks">
-        <a href="#about">About</a>
-        <a href="#treats">Treats</a>
-        <a href="#paws">Paws</a>
-        <a href="#accessories">Accessories</a>
-        <a href="https://instagram.com/cozyloop_2212" target="_blank" rel="noopener" class="nav__cta">Order on Instagram</a>
-      </nav>
-      <button class="nav__toggle" id="navToggle" aria-label="Open menu">☰</button>
+      <a class="brand" href="index.html">COZY LOOP <svg class="icon-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-left: 4px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"></path><path d="M12 2a15.3 15.3 0 0 0-4 10 15.3 15.3 0 0 0 4 10"></path><path d="M2 12h20"></path></svg></a>
+      
+      <!-- Floating Pill Navigation Container -->
+      <div class="nav__pill-container">
+        <nav class="nav__links" id="navLinks">
+          <a href="index.html" class="active-pill">HOME</a>
+          <a href="about.html">ABOUT</a>
+          <a href="shop.html">SHOP</a>
+          <a href="custom.html">CUSTOM</a>
+          <button class="nav__cart-link-btn" onclick="window.location.href='cart.html'" aria-label="Open Cart">
+            CART (<span id="cartCountNav">0</span>)
+          </button>
+        </nav>
+      </div>
+
+      <a href="https://instagram.com/cozyloop_2212" target="_blank" rel="noopener" class="nav__cta">INSTAGRAM</a>
+      <button class="nav__toggle" id="navToggle" aria-label="Open Menu"><svg class="icon-svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
     </div>
   </header>
 
+  <!-- Cinematic Hero Section -->
   <section class="hero">
     <div class="container hero__inner">
-      <div class="hero__text">
-        <span class="eyebrow">Handmade · Made to order</span>
-        <h1>Tiny crochet treasures, looped by hand.</h1>
-        <p>Cozy Loop is a small handmade crochet studio by <strong>Joseph Paul</strong>. Little keychains, mini crochet desserts, and soft accessories, each one stitched one loop at a time.</p>
-        <div class="hero__btns">
-          <a href="#treats" class="btn btn--primary">Browse the shop</a>
-          <a href="#contact" class="btn btn--text">How ordering works →</a>
+      <div class="hero__main-headline gsap-fade">
+        <h1 class="giant-header">COZY LOOP</h1>
+      </div>
+      
+      <div class="hero__metadata-border"></div>
+      
+      <div class="hero__metadata-row">
+        <div class="meta-col left-col gsap-reveal">
+          <span class="mono-label">BASED IN</span>
+          <p class="meta-val">MALAYSIA</p>
+          <p class="meta-desc">Crochet art with heavy technical precision. Handmade in Segamat, Johor.</p>
+        </div>
+        
+        <div class="meta-col center-col gsap-reveal">
+          <!-- Rotating Scroll Indicator -->
+          <div class="scroll-indicator" id="scrollIndicator">
+            <svg class="scroll-indicator__svg" viewBox="0 0 150 150">
+              <path id="circlePath" d="M 75, 75 m -60, 0 a 60,60 0 1,1 120,0 a 60,60 0 1,1 -120,0" fill="none"></path>
+              <text>
+                <textPath href="#circlePath" class="scroll-indicator__text">
+                  SCROLL DOWN • SCROLL DOWN • SCROLL DOWN • SCROLL DOWN • 
+                </textPath>
+              </text>
+            </svg>
+            <div class="scroll-indicator__arrow">&#x2193;</div>
+          </div>
+        </div>
+        
+        <div class="meta-col right-col gsap-reveal">
+          <span class="mono-label">MAKER</span>
+          <p class="meta-val">JOSEPH PAUL</p>
+          <p class="meta-desc">Stitched loop-by-loop. No shortcuts.</p>
+          <div style="display: flex; gap: 12px; margin-top: 18px;">
+            <a href="shop.html" class="btn btn--primary btn--hero">ENTER SHOP</a>
+            <a href="about.html" class="btn btn--secondary btn--hero">OUR STORY</a>
+          </div>
         </div>
       </div>
-      <div class="hero__collage">
-        <figure class="hero__img hero__img--tall"><img src="images/mini-bear.jpg" alt="Mini bear crochet keychains" loading="eager" /></figure>
-        <figure class="hero__img"><img src="images/matcha-strawberry.jpg" alt="Matcha strawberry crochet swiss roll" loading="eager" /></figure>
-        <figure class="hero__img"><img src="images/flower-bouquet.jpg" alt="Crochet flower bouquet" loading="lazy" /></figure>
+    </div>
+  </section>
+
+  <!-- Marquee Section -->
+  <section class="marquee-skewed">
+    <div class="marquee-skewed__inner">
+      <div class="marquee-row marquee-row--left" aria-hidden="true">
+        <div class="marquee-row__track">
+          <span>COZY PAWS • COZY TREATS • ACCESSORIES • COZY PAWS • COZY TREATS • ACCESSORIES •</span>
+          <span>COZY PAWS • COZY TREATS • ACCESSORIES • COZY PAWS • COZY TREATS • ACCESSORIES •</span>
+        </div>
+      </div>
+      <div class="marquee-row marquee-row--right" aria-hidden="true">
+        <div class="marquee-row__track">
+          <span>100% HANDMADE • MADE TO ORDER • CUSTOM DESIGN • 100% HANDMADE • MADE TO ORDER • CUSTOM DESIGN •</span>
+          <span>100% HANDMADE • MADE TO ORDER • CUSTOM DESIGN • 100% HANDMADE • MADE TO ORDER • CUSTOM DESIGN •</span>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="marquee" aria-hidden="true">
-    <div class="marquee__track">
-      <span>100% handmade</span><span>·</span><span>made to order</span><span>·</span><span>custom colours</span><span>·</span><span>gift-ready</span><span>·</span><span>shipped from Malaysia</span><span>·</span>
-      <span>100% handmade</span><span>·</span><span>made to order</span><span>·</span><span>custom colours</span><span>·</span><span>gift-ready</span><span>·</span><span>shipped from Malaysia</span><span>·</span>
-    </div>
-  </section>
-
+  <!-- About Teaser Section -->
   <section class="about" id="about">
     <div class="container about__inner">
-      <figure class="about__photo"><img src="images/treats-hero.jpg" alt="A plate of assorted crochet treats" loading="lazy" /></figure>
+      <div class="about__photo-wrapper gsap-scale">
+        <img src="images/treats-hero.jpg" alt="A plate of assorted crochet treats" class="about__photo" loading="lazy" />
+        <div class="about__photo-overlay"></div>
+      </div>
       <div class="about__text">
-        <span class="eyebrow">The studio</span>
-        <h2>Made by hand, one loop at a time</h2>
-        <p>Every piece at Cozy Loop is crocheted from scratch by Joseph Paul. No machines, no mass production, just yarn, patience, and a lot of heart.</p>
-        <p>From mini swiss rolls that look good enough to eat to squishy little animal keychains, each item is a small handmade keepsake. Perfect as a gift, a bag charm, or a quiet treat for yourself.</p>
+        <span class="mono-label label-green gsap-reveal">THE STUDIO</span>
+        <h2 class="gsap-reveal">100% YARN. ZERO SHORTCUTS.</h2>
+        <p class="about__lead gsap-reveal">Every piece at Cozy Loop is crocheted from scratch by Joseph Paul. No machines, no mass production, just yarn, patience, and a lot of heart.</p>
+        <p class="gsap-reveal">From mini swiss rolls that look good enough to eat to squishy little animal keychains, each item is a small handmade keepsake. Perfect as a gift, a bag charm, or a quiet treat for yourself.</p>
+        <div style="margin-top: 28px;" class="gsap-reveal">
+          <a href="about.html" class="btn btn--primary">READ OUR STORY</a>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="catalog" id="treats">
+  <!-- Featured Curated Grid -->
+  <section class="catalog" id="shop" style="border-top: 1px solid var(--border-color);">
     <div class="container">
-      <div class="section-head">
-        <span class="eyebrow">Cozy Treats</span>
-        <h2>Crochet desserts</h2>
-        <p>Mini sweets that never melt.</p>
+      <div style="margin-bottom: 56px; text-align: center;">
+        <span class="mono-label gsap-reveal" style="background: var(--brand-green); color: var(--white); padding: 4px 12px; border-radius: 4px;">CURATED PICKS</span>
+        <h2 style="margin-top: 16px;" class="gsap-reveal">BEST SELLERS</h2>
+        <p style="font-weight: 500; max-width: 32em; margin: 14px auto 0; color: var(--text-secondary); line-height: 1.7;" class="gsap-reveal">A tiny selection of our most popular handmade stitches. Loop into our full catalog for more.</p>
       </div>
-      <div class="grid" id="grid-treats"></div>
+
+      <!-- Static Best Sellers -->
+      <div class="products-list" style="display: flex; flex-direction: column; gap: 8px; margin: 32px 0;">
+        
+        <!-- Matcha Roll -->
+        <div class="product-item gsap-reveal" onclick="window.location.href='shop.html'">
+          <div class="product-item__index">[A]</div>
+          <div class="product-item__media">
+            <img src="images/matcha-strawberry.jpg" alt="Matcha Strawberry Swiss Roll" loading="lazy" />
+          </div>
+          <div class="product-item__info">
+            <h3 class="product-item__title">Matcha Strawberry Swiss Roll</h3>
+            <div class="product-item__tags">
+              <span class="brutalist-tag">DESSERT</span>
+              <span class="brutalist-tag">RM 10.50</span>
+              <span class="brutalist-tag">Popular</span>
+            </div>
+          </div>
+          <div class="product-item__arrow">&#x2192;</div>
+        </div>
+
+        <!-- Mini Bear -->
+        <div class="product-item gsap-reveal" onclick="window.location.href='shop.html'">
+          <div class="product-item__index">[B]</div>
+          <div class="product-item__media">
+            <img src="images/mini-bear.jpg" alt="Mini Bear Keychain" loading="lazy" />
+          </div>
+          <div class="product-item__info">
+            <h3 class="product-item__title">Mini Bear Keychain</h3>
+            <div class="product-item__tags">
+              <span class="brutalist-tag">KEYCHAIN</span>
+              <span class="brutalist-tag">RM 10.50</span>
+              <span class="brutalist-tag">Top Rated</span>
+            </div>
+          </div>
+          <div class="product-item__arrow">&#x2192;</div>
+        </div>
+
+        <!-- Scrunchie -->
+        <div class="product-item gsap-reveal" onclick="window.location.href='shop.html'">
+          <div class="product-item__index">[C]</div>
+          <div class="product-item__media">
+            <img src="images/scrunchie.jpg" alt="Scrunchie" loading="lazy" />
+          </div>
+          <div class="product-item__info">
+            <h3 class="product-item__title">Scrunchie</h3>
+            <div class="product-item__tags">
+              <span class="brutalist-tag">ACCESSORY</span>
+              <span class="brutalist-tag">RM 4.00</span>
+              <span class="brutalist-tag">Soft Elastic</span>
+            </div>
+          </div>
+          <div class="product-item__arrow">&#x2192;</div>
+        </div>
+
+      </div>
+
+      <div style="text-align: center; margin-top: 40px;" class="gsap-reveal">
+        <a href="shop.html" class="btn btn--primary" style="padding: 16px 40px;">EXPLORE ALL 22 CREATIONS</a>
+      </div>
+
     </div>
   </section>
 
-  <section class="catalog catalog--alt" id="paws">
+  <!-- Custom Request Banner -->
+  <section style="padding: var(--section-pad) 24px; border-bottom: 1px solid var(--border-color);">
     <div class="container">
-      <div class="section-head">
-        <span class="eyebrow">Cozy Paws</span>
-        <h2>Animal keychains</h2>
-        <p>Little crochet friends for your bag and keys.</p>
+      <div class="custom-order-banner gsap-scale" id="custom-banner" style="margin-top: 0;">
+        <div class="custom-order-banner__content">
+          <span class="mono-label">BESPOKE SYSTEM</span>
+          <h3>COMMISSION A DESIGN</h3>
+          <p>Request specific colors, character shapes, or custom designs. Joseph will craft a custom crochet piece just for you.</p>
+          <a class="btn btn--primary" href="custom.html">REQUEST CUSTOM DESIGN</a>
+        </div>
       </div>
-      <div class="grid" id="grid-paws"></div>
     </div>
   </section>
 
-  <section class="catalog" id="accessories">
-    <div class="container">
-      <div class="section-head">
-        <span class="eyebrow">Accessories</span>
-        <h2>Wear it &amp; gift it</h2>
-        <p>Handmade flowers, scrunchies and clips.</p>
-      </div>
-      <div class="grid" id="grid-accessories"></div>
-    </div>
-  </section>
-
+  <!-- Contact / How it works -->
   <section class="contact" id="contact">
     <div class="container contact__inner">
-      <span class="eyebrow">Ordering</span>
-      <h2>Ready to order?</h2>
-      <p>All orders go through Instagram DM. Tell us the item you'd love and your colour choice, custom designs are always welcome. Prices in Malaysian Ringgit (RM).</p>
-      <div class="contact__btns">
-        <a class="btn btn--primary" href="https://instagram.com/cozyloop_2212" target="_blank" rel="noopener">DM @cozyloop_2212</a>
-        <a class="btn btn--text" href="https://instagram.com/joseph_unoff22" target="_blank" rel="noopener">Maker · @joseph_unoff22</a>
+      <span class="mono-label gsap-reveal">ORDERING SYSTEM</span>
+      <h2 class="gsap-reveal">HOW ORDERING WORKS</h2>
+      <p class="gsap-reveal">Configure items on our page and add them to your cart. Click 'Checkout via WhatsApp' to auto-generate a structured order detail sheet to send directly to Joseph, or complete a local simulated payment to generate a raw receipt instantly.</p>
+      <div class="contact__btns gsap-reveal">
+        <a class="btn btn--primary" href="https://instagram.com/cozyloop_2212" target="_blank" rel="noopener">INSTAGRAM DM</a>
+        <a class="btn btn--secondary" href="https://instagram.com/joseph_unoff22" target="_blank" rel="noopener">MAKER PROFILE</a>
       </div>
-      <p class="contact__note">Handmade items vary slightly piece to piece, that's the charm of it.</p>
+      <p class="contact__note gsap-reveal">*Every crochet creation is looped by hand. Minor details may vary, confirming authenticity.</p>
     </div>
   </section>
 
+  <!-- Footer -->
   <footer class="footer">
     <div class="container footer__inner">
-      <span class="footer__brand">Cozy Loop</span>
-      <p>Handmade by Joseph Paul · <a href="https://instagram.com/cozyloop_2212" target="_blank" rel="noopener">@cozyloop_2212</a></p>
-      <p class="footer__copy">© <span id="year"></span> Cozy Loop. Made with yarn &amp; love.</p>
+      <span class="footer__brand">COZY LOOP &copy;<span id="year">2026</span></span>
+      <p class="footer__dev">STITCHED BY JOSEPH PAUL &bull; WEB BY ANTIGRAVITY</p>
+      <div class="footer__links">
+        <a href="about.html">ABOUT</a>
+        <a href="shop.html">SHOP</a>
+        <a href="https://instagram.com/cozyloop_2212" target="_blank" rel="noopener">INSTAGRAM</a>
+      </div>
     </div>
   </footer>
 
+  <!-- Floating Cart Button -->
+  <button class="floating-cart-btn" onclick="window.location.href='cart.html'" id="floatingCartBtn" aria-label="Open Shopping Basket">
+    <span class="icon" style="display: flex; align-items: center; justify-content: center; height: 100%;"><svg class="icon-svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg></span>
+    <span class="badge" id="floatingCartCount">0</span>
+  </button>
+
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
