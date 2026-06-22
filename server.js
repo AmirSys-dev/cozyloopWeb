@@ -25,17 +25,37 @@ const multer = require('multer');
 const helmet = require('helmet');
 const crypto = require('crypto');
 require('dotenv').config();
+const { createClient } = require('@supabase/supabase-js');
 
 const APP_ROOT = __dirname;
 const PORT = process.env.PORT || 3000;
-const PRODUCTS_JSON = path.join(APP_ROOT, 'products.json');
 const UPLOAD_DIR = path.join(APP_ROOT, 'images', 'uploads');
 
 // Ensure upload dir exists
 if (!fsSync.existsSync(UPLOAD_DIR)) fsSync.mkdirSync(UPLOAD_DIR, { recursive: true });
 
-// Ensure products.json exists
-if (!fsSync.existsSync(PRODUCTS_JSON)) fsSync.writeFileSync(PRODUCTS_JSON, '[]', 'utf8');
+// Initialize Supabase Client
+const hasSupabaseUrl = process.env.SUPABASE_URL && !process.env.SUPABASE_URL.includes('your-project');
+const hasSupabaseKey = process.env.SUPABASE_KEY && !process.env.SUPABASE_KEY.includes('your-service-role');
+
+if (!hasSupabaseUrl || !hasSupabaseKey) {
+  console.warn('\n======================================================');
+  console.warn('WARNING: Supabase URL and Key are not properly configured.');
+  console.warn('Backend database endpoints will fail until configured in .env.');
+  console.warn('======================================================\n');
+}
+
+const supabase = (hasSupabaseUrl && hasSupabaseKey)
+  ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY)
+  : null;
+
+// Middleware to check if Supabase is available
+function checkSupabase(req, res, next) {
+  if (!supabase) {
+    return res.status(503).json({ error: 'Database service is currently unconfigured or unavailable.' });
+  }
+  next();
+}
 
 const app = express();
 
@@ -156,6 +176,7 @@ app.use((req, res, next) => {
     '/package-lock.json',
     '/.gitignore',
     '/products.json',
+    '/orders.json',
     '/README.md',
     '/patch_html_v2.py'
   ];
@@ -204,18 +225,21 @@ const upload = multer({
 // ─── API Routes ─────────────────────────────────────────────────
 
 // GET products (public)
-app.get('/api/products', async (req, res) => {
+app.get('/api/products', checkSupabase, async (req, res) => {
   try {
-    const data = await fs.readFile(PRODUCTS_JSON, 'utf8');
-    const arr = JSON.parse(data);
-    return res.json(arr);
+    const { data, error } = await supabase
+      .from('products')
+      .select('*');
+    if (error) throw error;
+    return res.json(data || []);
   } catch (e) {
-    return res.json([]);
+    console.error('[ERROR] GET /api/products:', e);
+    return res.status(500).json({ error: 'Failed to retrieve products' });
   }
 });
 
 // POST add a product (protected: auth + rate limit + CSRF header)
-app.post('/api/products', rateLimit, requireXHR, checkBasicAuth, upload.single('image'), async (req, res) => {
+app.post('/api/products', rateLimit, requireXHR, checkBasicAuth, checkSupabase, upload.single('image'), async (req, res) => {
   try {
     const id = sanitize(req.body.id);
     const name = sanitize(req.body.name);
@@ -238,13 +262,15 @@ app.post('/api/products', rateLimit, requireXHR, checkBasicAuth, upload.single('
 
     const imageName = req.file ? `uploads/${req.file.filename}` : null;
 
-    let products = [];
-    try {
-      const raw = await fs.readFile(PRODUCTS_JSON, 'utf8');
-      products = JSON.parse(raw);
-    } catch (e) { products = []; }
+    // Check duplicate in Supabase
+    const { data: existing, error: checkError } = await supabase
+      .from('products')
+      .select('id')
+      .eq('id', idSafe)
+      .maybeSingle();
 
-    if (products.find(p => p.id === idSafe)) {
+    if (checkError) throw checkError;
+    if (existing) {
       return res.status(400).json({ error: 'Product id already exists' });
     }
 
@@ -260,11 +286,16 @@ app.post('/api/products', rateLimit, requireXHR, checkBasicAuth, upload.single('
     };
     if (sub) newProduct.sub = sub;
 
-    products.push(newProduct);
-    await fs.writeFile(PRODUCTS_JSON, JSON.stringify(products, null, 2), 'utf8');
+    const { data: insertedProduct, error: insertError } = await supabase
+      .from('products')
+      .insert([newProduct])
+      .select()
+      .single();
+
+    if (insertError) throw insertError;
 
     console.log(`[ADMIN] Product added: ${idSafe} by ${req.headers['authorization'] ? 'authenticated' : 'unknown'}`);
-    return res.status(201).json(newProduct);
+    return res.status(201).json(insertedProduct);
   } catch (err) {
     console.error('[ERROR] POST /api/products:', err);
     return res.status(500).json({ error: 'Internal error' });
@@ -272,13 +303,229 @@ app.post('/api/products', rateLimit, requireXHR, checkBasicAuth, upload.single('
 });
 
 // Lightweight endpoint for frontend fetch (/products.json)
-app.get('/products.json', async (req, res) => {
+app.get('/products.json', checkSupabase, async (req, res) => {
   try {
-    const raw = await fs.readFile(PRODUCTS_JSON, 'utf8');
+    const { data, error } = await supabase
+      .from('products')
+      .select('*');
+    if (error) throw error;
     res.set('Content-Type', 'application/json');
-    return res.send(raw);
+    return res.json(data || []);
   } catch (e) {
+    console.error('[ERROR] GET /products.json:', e);
     return res.json([]);
+  }
+});
+
+// ─── Orders API Routes ──────────────────────────────────────────
+
+// Helper to map database snake_case columns back to camelCase for the frontend client
+function mapOrderFromDb(order) {
+  if (!order) return null;
+  const mapped = { ...order };
+  if (order.shipping_cost !== undefined) {
+    mapped.shippingCost = parseFloat(order.shipping_cost);
+    delete mapped.shipping_cost;
+  }
+  return mapped;
+}
+
+// POST create order (public)
+app.post('/api/orders', rateLimit, checkSupabase, async (req, res) => {
+  try {
+    const { customer, items, subtotal, shippingCost, total, region, notes } = req.body;
+
+    if (!customer || !customer.name || !customer.phone || !customer.address || !customer.postcode || !customer.city) {
+      return res.status(400).json({ error: 'Missing required customer details' });
+    }
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'Order must contain at least one item' });
+    }
+
+    // Generate unique Order ID: CL-2026-XXXXXX
+    const randomNum = Math.floor(100000 + Math.random() * 900000);
+    const orderId = `CL-2026-${randomNum}`;
+
+    const dateStr = new Date().toLocaleString('en-MY', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    const initialHistory = [
+      {
+        status: 'Pending',
+        location: 'Order received. Preparing crochet items.',
+        timestamp: new Date().toISOString()
+      }
+    ];
+
+    const newOrder = {
+      id: orderId,
+      date: dateStr,
+      customer: {
+        name: sanitize(customer.name),
+        phone: sanitize(customer.phone),
+        address: sanitize(customer.address),
+        postcode: sanitize(customer.postcode),
+        city: sanitize(customer.city),
+        state: sanitize(customer.state || 'Peninsular Malaysia')
+      },
+      items: items.map(item => ({
+        id: sanitize(item.id),
+        name: sanitize(item.name),
+        price: parseFloat(item.price) || 0,
+        quantity: parseInt(item.quantity) || 1,
+        options: {
+          attach: sanitize(item.options?.attach || 'None'),
+          notes: sanitize(item.options?.notes || '')
+        },
+        customDetails: sanitize(item.customDetails || '')
+      })),
+      subtotal: parseFloat(subtotal) || 0,
+      shippingCost: parseFloat(shippingCost) || 0,
+      total: parseFloat(total) || 0,
+      region: sanitize(region || 'West'),
+      notes: sanitize(notes || ''),
+      status: 'Pending',
+      location: 'Order received. Preparing crochet items.',
+      history: initialHistory
+    };
+
+    // Map shippingCost -> shipping_cost for database insert
+    const orderDbPayload = {
+      ...newOrder,
+      shipping_cost: newOrder.shippingCost
+    };
+    delete orderDbPayload.shippingCost;
+
+    const { data: insertedOrder, error: insertError } = await supabase
+      .from('orders')
+      .insert([orderDbPayload])
+      .select()
+      .single();
+
+    if (insertError) throw insertError;
+
+    console.log(`[ORDER] Order created: ${orderId} for ${newOrder.customer.name}`);
+    return res.status(201).json(mapOrderFromDb(insertedOrder));
+  } catch (err) {
+    console.error('[ERROR] POST /api/orders:', err);
+    return res.status(500).json({ error: 'Internal error' });
+  }
+});
+
+// GET track order (public lookup)
+app.get('/api/orders/track/:id', checkSupabase, async (req, res) => {
+  try {
+    const orderId = req.params.id.toUpperCase();
+    const { data: order, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('id', orderId)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    return res.json(mapOrderFromDb(order));
+  } catch (err) {
+    console.error('[ERROR] GET /api/orders/track:', err);
+    return res.status(500).json({ error: 'Internal error' });
+  }
+});
+
+// GET all orders (admin only)
+app.get('/api/orders', rateLimit, checkBasicAuth, checkSupabase, async (req, res) => {
+  try {
+    const { data: orders, error } = await supabase
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return res.json((orders || []).map(mapOrderFromDb));
+  } catch (err) {
+    console.error('[ERROR] GET /api/orders:', err);
+    return res.status(500).json({ error: 'Internal error' });
+  }
+});
+
+// PUT update order status/location (admin only)
+app.put('/api/orders/:id', rateLimit, requireXHR, checkBasicAuth, checkSupabase, async (req, res) => {
+  try {
+    const orderId = req.params.id.toUpperCase();
+    const { status, location } = req.body;
+
+    if (!status || !location) {
+      return res.status(400).json({ error: 'Missing status or location update message' });
+    }
+
+    const { data: order, error: fetchError } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('id', orderId)
+      .maybeSingle();
+
+    if (fetchError) throw fetchError;
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    const updatedHistory = [...(order.history || [])];
+    updatedHistory.push({
+      status: sanitize(status),
+      location: sanitize(location),
+      timestamp: new Date().toISOString()
+    });
+
+    const { data: updatedOrder, error: updateError } = await supabase
+      .from('orders')
+      .update({
+        status: sanitize(status),
+        location: sanitize(location),
+        history: updatedHistory
+      })
+      .eq('id', orderId)
+      .select()
+      .single();
+
+    if (updateError) throw updateError;
+
+    console.log(`[ADMIN] Order updated: ${orderId} status set to ${updatedOrder.status}`);
+    return res.json(mapOrderFromDb(updatedOrder));
+  } catch (err) {
+    console.error('[ERROR] PUT /api/orders:', err);
+    return res.status(500).json({ error: 'Internal error' });
+  }
+});
+
+// DELETE delete order (admin only)
+app.delete('/api/orders/:id', rateLimit, requireXHR, checkBasicAuth, checkSupabase, async (req, res) => {
+  try {
+    const orderId = req.params.id.toUpperCase();
+    const { data, error } = await supabase
+      .from('orders')
+      .delete()
+      .eq('id', orderId)
+      .select();
+
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    console.log(`[ADMIN] Order deleted: ${orderId}`);
+    return res.json({ success: true, message: `Order ${orderId} deleted successfully` });
+  } catch (err) {
+    console.error('[ERROR] DELETE /api/orders:', err);
+    return res.status(500).json({ error: 'Internal error' });
   }
 });
 

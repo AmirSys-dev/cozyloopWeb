@@ -228,6 +228,7 @@ let selectedProduct = null;
 let activeStep = 1;
 let currentShippingCost = SHIPPING_WEST;
 let currentCheckoutMode = 'mock';
+let activeOrder = null;
 
 // Initial Setup
 document.addEventListener('DOMContentLoaded', async () => {
@@ -372,7 +373,7 @@ function setupEventListeners() {
   // WhatsApp direct checkout button (cart.html step 1)
   const checkoutWhatsappBtn = document.getElementById('checkoutWhatsappBtn');
   if (checkoutWhatsappBtn) {
-    checkoutWhatsappBtn.addEventListener('click', (e) => {
+    checkoutWhatsappBtn.addEventListener('click', async (e) => {
       e.preventDefault();
       const form = document.getElementById('deliveryForm');
       if (form) {
@@ -380,13 +381,17 @@ function setupEventListeners() {
           const loader = document.getElementById('checkoutLoader');
           if (loader) loader.classList.remove('hidden');
           
-          setTimeout(() => {
+          try {
+            const savedOrder = await submitOrderToServer();
             if (loader) loader.classList.add('hidden');
-            generateReceiptData();
-            executeWhatsappRedirect();
+            generateReceiptData(savedOrder);
+            executeWhatsappRedirect(savedOrder);
             goToCheckoutStep(2);
             clearCart();
-          }, 1200);
+          } catch (err) {
+            if (loader) loader.classList.add('hidden');
+            alert('Failed to process checkout: ' + err.message);
+          }
         }
       }
     });
@@ -395,7 +400,7 @@ function setupEventListeners() {
   // Instagram direct checkout button (cart.html step 1)
   const checkoutInstagramBtn = document.getElementById('checkoutInstagramBtn');
   if (checkoutInstagramBtn) {
-    checkoutInstagramBtn.addEventListener('click', (e) => {
+    checkoutInstagramBtn.addEventListener('click', async (e) => {
       e.preventDefault();
       const form = document.getElementById('deliveryForm');
       if (form) {
@@ -403,13 +408,17 @@ function setupEventListeners() {
           const loader = document.getElementById('checkoutLoader');
           if (loader) loader.classList.remove('hidden');
           
-          setTimeout(() => {
+          try {
+            const savedOrder = await submitOrderToServer();
             if (loader) loader.classList.add('hidden');
-            generateReceiptData();
-            executeInstagramRedirect();
+            generateReceiptData(savedOrder);
+            executeInstagramRedirect(savedOrder);
             goToCheckoutStep(2);
             clearCart();
-          }, 1200);
+          } catch (err) {
+            if (loader) loader.classList.add('hidden');
+            alert('Failed to process checkout: ' + err.message);
+          }
         }
       }
     });
@@ -419,14 +428,7 @@ function setupEventListeners() {
   const shipRegion = document.getElementById('shipRegion');
   if (shipRegion) {
     shipRegion.addEventListener('change', (e) => {
-      currentShippingCost = SHIPPING_WEST;
       updateCartUI();
-      
-      const qrAmount = document.getElementById('qrAmount');
-      const payAmountBtn = document.getElementById('payAmountBtn');
-      const totalCost = getCartSubtotal() + currentShippingCost;
-      if (qrAmount) qrAmount.textContent = `RM ${totalCost.toFixed(2)}`;
-      if (payAmountBtn) payAmountBtn.textContent = `RM ${totalCost.toFixed(2)}`;
     });
   }
 
@@ -698,6 +700,16 @@ function updateCartUI() {
     }).join('');
 
     const subtotal = getCartSubtotal();
+    
+    const shipRegion = document.getElementById('shipRegion');
+    if (shipRegion) {
+      const region = shipRegion.value;
+      if (region === 'Melaka') currentShippingCost = 6.00;
+      else if (region === 'Kuala Lumpur') currentShippingCost = 8.00;
+      else if (region === 'Johor Bahru') currentShippingCost = 8.00;
+      else currentShippingCost = 10.00; // Others
+    }
+    
     const total = subtotal + currentShippingCost;
 
     const subtotalEl = document.getElementById('cartSubtotal');
@@ -707,8 +719,8 @@ function updateCartUI() {
     if (subtotalEl) subtotalEl.textContent = `RM ${subtotal.toFixed(2)}`;
     
     if (shippingEl) {
-      const shippingText = 'PENINSULAR M\'SIA';
-      shippingEl.textContent = `${shippingText} (RM ${currentShippingCost.toFixed(2)})`;
+      const regionName = shipRegion ? shipRegion.options[shipRegion.selectedIndex].text.split(' (')[0] : 'Peninsular M\'sia';
+      shippingEl.textContent = `${regionName.toUpperCase()} (RM ${currentShippingCost.toFixed(2)})`;
     }
     
     if (totalEl) totalEl.textContent = `RM ${total.toFixed(2)}`;
@@ -793,68 +805,112 @@ function goToCheckoutStep(stepNum) {
   }
 }
 
+// Submit Order to Server API
+async function submitOrderToServer() {
+  const name = document.getElementById('shipName').value.trim();
+  const phone = document.getElementById('shipPhone').value.trim();
+  const address = document.getElementById('shipAddress').value.trim();
+  const postcode = document.getElementById('shipPostcode').value.trim();
+  const city = document.getElementById('shipCity').value.trim();
+  const shipRegionEl = document.getElementById('shipRegion');
+  const state = shipRegionEl ? shipRegionEl.value : 'Melaka';
+
+  const subtotal = getCartSubtotal();
+  const total = subtotal + currentShippingCost;
+
+  const orderPayload = {
+    customer: { name, phone, address, postcode, city, state },
+    items: cart.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      options: {
+        attach: item.options?.attach || 'None',
+        notes: item.options?.notes || ''
+      },
+      customDetails: item.customDetails || ''
+    })),
+    subtotal: subtotal,
+    shippingCost: currentShippingCost,
+    total: total,
+    region: state,
+    notes: ''
+  };
+
+  try {
+    const res = await fetch('/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(orderPayload)
+    });
+    
+    if (res.ok) {
+      return await res.json();
+    } else {
+      const errData = await res.json();
+      throw new Error(errData.error || 'Server error');
+    }
+  } catch (err) {
+    console.warn('Failed to save order to database, using local fallback:', err);
+    const randomNum = Math.floor(100000 + Math.random() * 900000);
+    return {
+      id: `CL-2026-${randomNum}`,
+      date: new Date().toLocaleString('en-MY', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }),
+      customer: orderPayload.customer,
+      items: orderPayload.items,
+      subtotal: subtotal,
+      shippingCost: currentShippingCost,
+      total: total
+    };
+  }
+}
+
 // WhatsApp redirect details builder
-function executeWhatsappRedirect() {
-  const name = document.getElementById('shipName').value;
-  const phone = document.getElementById('shipPhone').value;
-  const address = document.getElementById('shipAddress').value;
-  const postcode = document.getElementById('shipPostcode').value;
-  const city = document.getElementById('shipCity').value;
-  const state = 'Peninsular Malaysia';
-
-  const deliveryData = { name, phone, address, postcode, city, state };
-  const waText = compileWhatsappMessage(cart, deliveryData, currentShippingCost);
-  
+function executeWhatsappRedirect(order) {
+  const waText = compileWhatsappMessage(order);
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${waText}`;
-
   window.open(whatsappUrl, '_blank');
 }
 
 // Instagram redirect details builder
-function executeInstagramRedirect() {
-  const name = document.getElementById('shipName').value;
-  const phone = document.getElementById('shipPhone').value;
-  const address = document.getElementById('shipAddress').value;
-  const postcode = document.getElementById('shipPostcode').value;
-  const city = document.getElementById('shipCity').value;
-  const state = 'Peninsular Malaysia';
-
-  const deliveryData = { name, phone, address, postcode, city, state };
-  const orderId = document.getElementById('recOrderId') ? document.getElementById('recOrderId').textContent : `CL-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
-  const dateStr = document.getElementById('recDate') ? document.getElementById('recDate').textContent : new Date().toLocaleString();
-
+function executeInstagramRedirect(order) {
   let text = `--- COZY LOOP ORDER SHEET ---\n`;
-  text += `Order ID: ${orderId}\n`;
-  text += `Date: ${dateStr}\n\n`;
+  text += `Order ID: ${order.id}\n`;
+  text += `Date: ${order.date}\n\n`;
   text += `CUSTOMER DETAILS\n`;
-  text += `• Name: ${deliveryData.name}\n`;
-  text += `• Phone: ${deliveryData.phone}\n`;
-  text += `• Address: ${deliveryData.address}, ${deliveryData.postcode} ${deliveryData.city}, ${deliveryData.state}\n\n`;
+  text += `• Name: ${order.customer.name}\n`;
+  text += `• Phone: ${order.customer.phone}\n`;
+  text += `• Address: ${order.customer.address}, ${order.customer.postcode} ${order.customer.city}, ${order.customer.state}\n\n`;
   
   text += `ORDER ITEMS\n`;
-  let sub = 0;
-  cart.forEach((item, index) => {
-    const itemPrice = item.price;
-    const itemTotal = itemPrice * item.quantity;
-    sub += itemTotal;
-    
-    text += `${index + 1}. *${item.name}* x${item.quantity} (RM ${itemPrice.toFixed(2)} ea)\n`;
-    if (item.options.attach && item.options.attach !== 'None') {
+  order.items.forEach((item, index) => {
+    text += `${index + 1}. *${item.name}* x${item.quantity} (RM ${item.price.toFixed(2)} ea)\n`;
+    if (item.options?.attach && item.options.attach !== 'None') {
       text += `   - Attachment: ${item.options.attach}\n`;
     }
-    if (item.options.notes) {
+    if (item.options?.notes) {
       text += `   - Color/Notes: ${item.options.notes}\n`;
     }
     if (item.customDetails) {
       text += `   - Description: ${item.customDetails}\n`;
     }
-    text += `   Subtotal: RM ${itemTotal.toFixed(2)}\n`;
+    text += `   Subtotal: RM ${(item.price * item.quantity).toFixed(2)}\n`;
   });
   
   text += `\nTOTAL SUMMARY\n`;
-  text += `• Subtotal: RM ${sub.toFixed(2)}\n`;
-  text += `• Shipping: RM ${currentShippingCost.toFixed(2)}\n`;
-  text += `• Total Amount: RM ${(sub + currentShippingCost).toFixed(2)}\n\n`;
+  text += `• Subtotal: RM ${order.subtotal.toFixed(2)}\n`;
+  text += `• Shipping: RM ${order.shippingCost.toFixed(2)}\n`;
+  text += `• Total Amount: RM ${order.total.toFixed(2)}\n\n`;
   text += `Thank you!`;
 
   navigator.clipboard.writeText(text).then(() => {
@@ -866,60 +922,42 @@ function executeInstagramRedirect() {
   });
 }
 
-function compileWhatsappMessage(cartData, delivery, shippingCost) {
+function compileWhatsappMessage(order) {
   let text = `Hello Cozy Loop!\nI'd like to place an order from your website.\n\n`;
+  text += `*ORDER ID*: ${order.id}\n`;
+  text += `*DATE*: ${order.date}\n\n`;
   text += `*CUSTOMER DETAILS*\n`;
-  text += `• Name: ${delivery.name}\n`;
-  text += `• Phone: ${delivery.phone}\n`;
-  text += `• Address: ${delivery.address}, ${delivery.postcode} ${delivery.city}, ${delivery.state}\n\n`;
+  text += `• Name: ${order.customer.name}\n`;
+  text += `• Phone: ${order.customer.phone}\n`;
+  text += `• Address: ${order.customer.address}, ${order.customer.postcode} ${order.customer.city}, ${order.customer.state}\n\n`;
   
   text += `*ORDER ITEMS*\n`;
-  let sub = 0;
-  cartData.forEach((item, index) => {
-    const itemPrice = item.price;
-    const itemTotal = itemPrice * item.quantity;
-    sub += itemTotal;
-    
-    text += `${index + 1}. *${item.name}* x${item.quantity} (RM ${itemPrice.toFixed(2)} ea)\n`;
-    if (item.options.attach && item.options.attach !== 'None') {
+  order.items.forEach((item, index) => {
+    text += `${index + 1}. *${item.name}* x${item.quantity} (RM ${item.price.toFixed(2)} ea)\n`;
+    if (item.options?.attach && item.options.attach !== 'None') {
       text += `   - Attachment: ${item.options.attach}\n`;
     }
-    if (item.options.notes) {
+    if (item.options?.notes) {
       text += `   - Color/Notes: ${item.options.notes}\n`;
     }
     if (item.customDetails) {
       text += `   - Description: ${item.customDetails}\n`;
     }
-    text += `   Subtotal: RM ${itemTotal.toFixed(2)}\n`;
+    text += `   Subtotal: RM ${(item.price * item.quantity).toFixed(2)}\n`;
   });
   
   text += `\n*TOTAL SUMMARY*\n`;
-  text += `• Subtotal: RM ${sub.toFixed(2)}\n`;
-  text += `• Shipping: RM ${shippingCost.toFixed(2)}\n`;
-  text += `• *Total Amount: RM ${(sub + shippingCost).toFixed(2)}*\n\n`;
+  text += `• Subtotal: RM ${order.subtotal.toFixed(2)}\n`;
+  text += `• Shipping: RM ${order.shippingCost.toFixed(2)}\n`;
+  text += `• *Total Amount: RM ${order.total.toFixed(2)}*\n\n`;
   text += `Thank you!`;
   
   return encodeURIComponent(text);
 }
 
 // Simulated receipt compiler
-function generateReceiptData() {
-  const name = document.getElementById('shipName').value;
-  const phone = document.getElementById('shipPhone').value;
-  const address = document.getElementById('shipAddress').value;
-  const postcode = document.getElementById('shipPostcode').value;
-  const city = document.getElementById('shipCity').value;
-  const state = 'Peninsular Malaysia';
-
-  const randOrderId = `CL-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
-  const dateStr = new Date().toLocaleString('en-MY', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  });
+function generateReceiptData(order) {
+  activeOrder = order;
 
   const recOrderId = document.getElementById('recOrderId');
   const recDate = document.getElementById('recDate');
@@ -928,19 +966,19 @@ function generateReceiptData() {
   const recAddress = document.getElementById('recCustomerAddress');
   const receiptBody = document.getElementById('receiptItemsBody');
 
-  if (recOrderId) recOrderId.textContent = randOrderId;
-  if (recDate) recDate.textContent = dateStr;
-  if (recName) recName.textContent = name;
-  if (recPhone) recPhone.textContent = phone;
-  if (recAddress) recAddress.textContent = `${address}, ${postcode} ${city}, ${state}`;
+  if (recOrderId) recOrderId.textContent = order.id;
+  if (recDate) recDate.textContent = order.date;
+  if (recName) recName.textContent = order.customer.name;
+  if (recPhone) recPhone.textContent = order.customer.phone;
+  if (recAddress) recAddress.textContent = `${order.customer.address}, ${order.customer.postcode} ${order.customer.city}, ${order.customer.state}`;
 
   if (receiptBody) {
-    receiptBody.innerHTML = cart.map(item => {
+    receiptBody.innerHTML = order.items.map(item => {
       let customLabel = '';
-      if (item.options.attach && item.options.attach !== 'None') {
+      if (item.options?.attach && item.options.attach !== 'None') {
         customLabel += `<div class="rec-item-opt">• Attachment: ${item.options.attach}</div>`;
       }
-      if (item.options.notes) {
+      if (item.options?.notes) {
         customLabel += `<div class="rec-item-opt">• Customization: ${item.options.notes}</div>`;
       }
       if (item.customDetails) {
@@ -959,28 +997,26 @@ function generateReceiptData() {
     }).join('');
   }
 
-  const subtotal = getCartSubtotal();
-  const total = subtotal + currentShippingCost;
-
   const recSubtotal = document.getElementById('recSubtotal');
   const recShipping = document.getElementById('recShipping');
   const recTotal = document.getElementById('recTotal');
 
-  if (recSubtotal) recSubtotal.textContent = `RM ${subtotal.toFixed(2)}`;
-  if (recShipping) recShipping.textContent = `RM ${currentShippingCost.toFixed(2)}`;
-  if (recTotal) recTotal.textContent = `RM ${total.toFixed(2)}`;
+  if (recSubtotal) recSubtotal.textContent = `RM ${order.subtotal.toFixed(2)}`;
+  if (recShipping) recShipping.textContent = `RM ${order.shippingCost.toFixed(2)}`;
+  if (recTotal) recTotal.textContent = `RM ${order.total.toFixed(2)}`;
 }
 
 // Copy receipt detail sheet text
 function copyReceiptText() {
-  const orderId = document.getElementById('recOrderId').textContent;
-  const date = document.getElementById('recDate').textContent;
-  const customer = document.getElementById('recCustomerName').textContent;
-  const phone = document.getElementById('recCustomerPhone').textContent;
-  const address = document.getElementById('recCustomerAddress').textContent;
-  const subtotal = document.getElementById('recSubtotal').textContent;
-  const shipping = document.getElementById('recShipping').textContent;
-  const total = document.getElementById('recTotal').textContent;
+  if (!activeOrder) return;
+  const orderId = activeOrder.id;
+  const date = activeOrder.date;
+  const customer = activeOrder.customer.name;
+  const phone = activeOrder.customer.phone;
+  const address = `${activeOrder.customer.address}, ${activeOrder.customer.postcode} ${activeOrder.customer.city}, ${activeOrder.customer.state}`;
+  const subtotal = activeOrder.subtotal.toFixed(2);
+  const shipping = activeOrder.shippingCost.toFixed(2);
+  const total = activeOrder.total.toFixed(2);
 
   let copyText = `--- COZY LOOP ORDER RECEIPT ---\n`;
   copyText += `Order ID: ${orderId}\n`;
@@ -990,12 +1026,12 @@ function copyReceiptText() {
   copyText += `Address: ${address}\n\n`;
   copyText += `ITEMS:\n`;
 
-  cart.forEach(item => {
+  activeOrder.items.forEach(item => {
     copyText += `- ${item.name} x${item.quantity} (RM ${item.price.toFixed(2)} ea)\n`;
-    if (item.options.attach && item.options.attach !== 'None') {
+    if (item.options?.attach && item.options.attach !== 'None') {
       copyText += `  Attachment: ${item.options.attach}\n`;
     }
-    if (item.options.notes) {
+    if (item.options?.notes) {
       copyText += `  Note: ${item.options.notes}\n`;
     }
     if (item.customDetails) {
@@ -1003,9 +1039,9 @@ function copyReceiptText() {
     }
   });
 
-  copyText += `\nSubtotal: ${subtotal}\n`;
-  copyText += `Shipping: ${shipping}\n`;
-  copyText += `Total Paid: ${total}\n`;
+  copyText += `\nSubtotal: RM ${subtotal}\n`;
+  copyText += `Shipping: RM ${shipping}\n`;
+  copyText += `Total Paid: RM ${total}\n`;
   copyText += `-------------------------------\n`;
   copyText += `Thank you for shopping at Cozy Loop!`;
 
