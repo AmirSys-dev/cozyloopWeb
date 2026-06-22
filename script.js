@@ -4,9 +4,9 @@
 // Supabase Configuration
 const supabaseUrl = 'https://mzlsicmrajabuzmdmnri.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16bHNpY21yYWphYnV6bWRtbnJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NzMzOTIsImV4cCI6MjA5NDI0OTM5Mn0.XdHbz6r0aLXFLuHJmtHFKFwE-8A6K4bRFxM1tHwRz4Q';
-let supabase = null;
+let supabaseClient = null;
 if (typeof window !== 'undefined' && window.supabase) {
-  supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+  supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 }
 
 // Resolve image URL/paths dynamically (supporting local slugs, local uploads, and external absolute URLs)
@@ -252,9 +252,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadCart();
   
   // Attempt to load dynamic products directly from Supabase. If unavailable, fall back to embedded list.
-  if (supabase) {
+  if (supabaseClient) {
     try {
-      const { data, error } = await supabase.from('products').select('*');
+      const { data, error } = await supabaseClient.from('products').select('*');
       if (error) throw error;
       if (data && data.length) {
         products = data;
@@ -854,7 +854,7 @@ async function submitOrderToServer() {
     notes: ''
   };
 
-  if (supabase) {
+  if (supabaseClient) {
     try {
       const randomNum = Math.floor(100000 + Math.random() * 900000);
       const orderId = `CL-2026-${randomNum}`;
@@ -891,7 +891,7 @@ async function submitOrderToServer() {
         history: initialHistory
       };
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('orders')
         .insert([dbPayload])
         .select()

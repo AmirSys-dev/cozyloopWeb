@@ -509,18 +509,18 @@
     // Supabase Configuration
     const supabaseUrl = 'https://mzlsicmrajabuzmdmnri.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16bHNpY21yYWphYnV6bWRtbnJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NzMzOTIsImV4cCI6MjA5NDI0OTM5Mn0.XdHbz6r0aLXFLuHJmtHFKFwE-8A6K4bRFxM1tHwRz4Q';
-    let supabase = null;
+    let supabaseClient = null;
     if (window.supabase) {
-      supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+      supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
     }
 
     let ordersList = [];
 
     // Check Supabase session on load to bypass the login overlay
     window.addEventListener('DOMContentLoaded', async () => {
-      if (supabase) {
+      if (supabaseClient) {
         try {
-          const { data: { session }, error } = await supabase.auth.getSession();
+          const { data: { session }, error } = await supabaseClient.auth.getSession();
           if (session) {
             document.getElementById('loginOverlay').style.display = 'none';
             loadOrdersList();
@@ -548,7 +548,7 @@
         return;
       }
 
-      if (!supabase) {
+      if (!supabaseClient) {
         errorDiv.textContent = 'Supabase client is not loaded. Try again later.';
         errorDiv.style.display = 'block';
         return;
@@ -558,7 +558,7 @@
       const email = user.includes('@') ? user : `${user}@cozyloop.my.id`;
 
       try {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
           email: email,
           password: pass
         });
@@ -575,8 +575,8 @@
 
     // Sign out function to clear session and show login gate
     async function handleSignOut() {
-      if (supabase) {
-        await supabase.auth.signOut();
+      if (supabaseClient) {
+        await supabaseClient.auth.signOut();
       }
       document.getElementById('overlayUser').value = '';
       document.getElementById('overlayPass').value = '';
@@ -608,17 +608,17 @@
 
     // Load orders list directly from Supabase
     async function loadOrdersList() {
-      if (!supabase) return;
+      if (!supabaseClient) return;
       try {
-        let query = supabase.from('orders').select('*');
+        let query = supabaseClient.from('orders').select('*');
         // Try to order by created_at first, then date
         let { data: orders, error } = await query.order('created_at', { ascending: false });
         if (error) {
           console.warn('created_at sort failed, trying date sort...', error);
-          const fallback = await supabase.from('orders').select('*').order('date', { ascending: false });
+          const fallback = await supabaseClient.from('orders').select('*').order('date', { ascending: false });
           if (fallback.error) {
             console.warn('date sort failed, loading unsorted...', fallback.error);
-            const raw = await supabase.from('orders').select('*');
+            const raw = await supabaseClient.from('orders').select('*');
             if (raw.error) throw raw.error;
             orders = raw.data;
           } else {
@@ -713,11 +713,11 @@
     // Quick cancel order directly in Supabase
     async function quickCancelOrder(orderId) {
       if (!confirm('Are you sure you want to cancel order ' + orderId + '?')) return;
-      if (!supabase) return;
+      if (!supabaseClient) return;
 
       try {
         // Fetch current history
-        const { data: order, error: fetchError } = await supabase
+        const { data: order, error: fetchError } = await supabaseClient
           .from('orders')
           .select('history')
           .eq('id', orderId)
@@ -733,7 +733,7 @@
           timestamp: new Date().toISOString()
         });
 
-        const { error: updateError } = await supabase
+        const { error: updateError } = await supabaseClient
           .from('orders')
           .update({
             status: 'Cancelled',
@@ -754,10 +754,10 @@
     // Delete order directly from Supabase
     async function deleteOrderLog(orderId) {
       if (!confirm('WARNING: Are you sure you want to delete order ' + orderId + ' from the database? This cannot be undone.')) return;
-      if (!supabase) return;
+      if (!supabaseClient) return;
 
       try {
-        const { error } = await supabase
+        const { error } = await supabaseClient
           .from('orders')
           .delete()
           .eq('id', orderId);
@@ -791,11 +791,11 @@
       const orderId = document.getElementById('modalOrderIdHidden').value;
       const status = document.getElementById('modalStatusSelect').value;
       const location = document.getElementById('modalLocationInput').value.trim();
-      if (!supabase) return;
+      if (!supabaseClient) return;
 
       try {
         // Fetch current history
-        const { data: order, error: fetchError } = await supabase
+        const { data: order, error: fetchError } = await supabaseClient
           .from('orders')
           .select('history')
           .eq('id', orderId)
@@ -811,7 +811,7 @@
           timestamp: new Date().toISOString()
         });
 
-        const { error: updateError } = await supabase
+        const { error: updateError } = await supabaseClient
           .from('orders')
           .update({
             status: status,
@@ -837,7 +837,7 @@
       const resultBox = document.getElementById('result');
       resultBox.className = ''; resultBox.style.display = 'none';
 
-      if (!supabase) { showResult('Database client not loaded.', false); return; }
+      if (!supabaseClient) { showResult('Database client not loaded.', false); return; }
 
       const id = document.getElementById('prodId').value.trim();
       const name = document.getElementById('name').value.trim();
@@ -856,7 +856,7 @@
 
       try {
         // Check duplicate
-        const { data: existing, error: checkError } = await supabase
+        const { data: existing, error: checkError } = await supabaseClient
           .from('products')
           .select('id')
           .eq('id', idSafe)
@@ -878,7 +878,7 @@
           const filePath = `uploads/${fileName}`;
 
           showResult('Uploading product image to Supabase Storage...', true);
-          const { error: uploadError } = await supabase.storage
+          const { error: uploadError } = await supabaseClient.storage
             .from('product-images')
             .upload(filePath, file, { upsert: true });
 
@@ -887,7 +887,7 @@
           }
 
           // Get public URL
-          const { data: publicUrlData } = supabase.storage
+          const { data: publicUrlData } = supabaseClient.storage
             .from('product-images')
             .getPublicUrl(filePath);
 
@@ -905,7 +905,7 @@
           materials: materials
         };
 
-        const { data: insertedProduct, error: insertError } = await supabase
+        const { data: insertedProduct, error: insertError } = await supabaseClient
           .from('products')
           .insert([newProduct])
           .select()

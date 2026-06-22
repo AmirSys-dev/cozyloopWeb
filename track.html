@@ -398,9 +398,9 @@
     // Supabase Configuration
     const supabaseUrl = 'https://mzlsicmrajabuzmdmnri.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16bHNpY21yYWphYnV6bWRtbnJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NzMzOTIsImV4cCI6MjA5NDI0OTM5Mn0.XdHbz6r0aLXFLuHJmtHFKFwE-8A6K4bRFxM1tHwRz4Q';
-    let supabase = null;
+    let supabaseClient = null;
     if (window.supabase) {
-      supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+      supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
     }
 
     // Fetch order from API and render
@@ -408,14 +408,14 @@
       const trackError = document.getElementById('trackError');
       trackError.style.display = 'none';
       
-      if (!supabase) {
+      if (!supabaseClient) {
         trackError.textContent = 'Database client is not loaded. Try again later.';
         trackError.style.display = 'block';
         return;
       }
 
       try {
-        const { data: order, error } = await supabase
+        const { data: order, error } = await supabaseClient
           .from('orders')
           .select('*')
           .eq('id', orderId.toUpperCase())
