@@ -1,6 +1,23 @@
 // Cozy Loop E-Commerce Core Logic
 // Stitched with precision for Joseph Paul (@cozyloop_2212)
 
+// Supabase Configuration
+const supabaseUrl = 'https://mzlsicmrajabuzmdmnri.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16bHNpY21yYWphYnV6bWRtbnJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NzMzOTIsImV4cCI6MjA5NDI0OTM5Mn0.XdHbz6r0aLXFLuHJmtHFKFwE-8A6K4bRFxM1tHwRz4Q';
+let supabase = null;
+if (typeof window !== 'undefined' && window.supabase) {
+  supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+}
+
+// Resolve image URL/paths dynamically (supporting local slugs, local uploads, and external absolute URLs)
+function getProductImgUrl(img) {
+  if (!img) return 'images/logo.jpg';
+  if (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('data:')) {
+    return img;
+  }
+  return img.includes('/') ? 'images/' + img : 'images/' + img + '.jpg';
+}
+
 const WHATSAPP_NUMBER = '60123456789'; // Default WhatsApp number
 const SHIPPING_WEST = 8.00;
 
@@ -234,18 +251,17 @@ let activeOrder = null;
 document.addEventListener('DOMContentLoaded', async () => {
   loadCart();
   
-  // Attempt to load dynamic products from /products.json (server-managed). If unavailable, fall back to embedded list.
-  try {
-    const resp = await fetch('/products.json', { cache: 'no-store' });
-    if (resp.ok) {
-      const data = await resp.json();
-      if (Array.isArray(data) && data.length) {
+  // Attempt to load dynamic products directly from Supabase. If unavailable, fall back to embedded list.
+  if (supabase) {
+    try {
+      const { data, error } = await supabase.from('products').select('*');
+      if (error) throw error;
+      if (data && data.length) {
         products = data;
       }
+    } catch (err) {
+      console.warn('Supabase products fetch failed:', err);
     }
-  } catch (err) {
-    // Fail silently and use embedded products
-    console.warn('products.json fetch failed:', err);
   }
 
   // Only render products if shop list is present
@@ -298,7 +314,7 @@ function renderProducts() {
       <div class="product-item" onclick="openProductModal('${p.id}')">
         <div class="product-item__index">${indexStr}</div>
         <div class="product-item__media">
-          <img src="${p.img && p.img.includes('/') ? 'images/' + p.img : 'images/' + p.img + '.jpg'}" alt="${p.name}" loading="lazy" />
+          <img src="${getProductImgUrl(p.img)}" alt="${p.name}" loading="lazy" />
         </div>
         <div class="product-item__info">
           <h3 class="product-item__title">${p.name}</h3>
@@ -473,7 +489,7 @@ function openProductModal(productId) {
   const modalAttachSelect = document.getElementById('modalOptionAttach');
   const modalNotesInput = document.getElementById('modalOptionNotes');
 
-  if (modalImg) modalImg.src = product.img && product.img.includes('/') ? `images/${product.img}` : `images/${product.img}.jpg`;
+  if (modalImg) modalImg.src = getProductImgUrl(product.img);
   if (modalImg) modalImg.alt = product.name;
   if (modalName) modalName.textContent = product.name;
   if (modalPrice) modalPrice.textContent = `RM ${product.price.toFixed(2)}`;
@@ -681,7 +697,7 @@ function updateCartUI() {
       return `
         <div class="cart-item">
           <div class="cart-item__media">
-            <img src="${item.img && item.img.includes('/') ? 'images/' + item.img : 'images/' + item.img + '.jpg'}" alt="${item.name}" />
+            <img src="${getProductImgUrl(item.img)}" alt="${item.name}" />
           </div>
           <div class="cart-item__details">
             <h4 class="cart-item__name">${item.name}</h4>
@@ -838,41 +854,79 @@ async function submitOrderToServer() {
     notes: ''
   };
 
-  try {
-    const res = await fetch('/api/orders', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(orderPayload)
-    });
-    
-    if (res.ok) {
-      return await res.json();
-    } else {
-      const errData = await res.json();
-      throw new Error(errData.error || 'Server error');
-    }
-  } catch (err) {
-    console.warn('Failed to save order to database, using local fallback:', err);
-    const randomNum = Math.floor(100000 + Math.random() * 900000);
-    return {
-      id: `CL-2026-${randomNum}`,
-      date: new Date().toLocaleString('en-MY', {
+  if (supabase) {
+    try {
+      const randomNum = Math.floor(100000 + Math.random() * 900000);
+      const orderId = `CL-2026-${randomNum}`;
+      
+      const dateStr = new Date().toLocaleString('en-MY', {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
         hour12: true
-      }),
-      customer: orderPayload.customer,
-      items: orderPayload.items,
-      subtotal: subtotal,
-      shippingCost: currentShippingCost,
-      total: total
-    };
+      });
+
+      const initialHistory = [
+        {
+          status: 'Pending',
+          location: 'Order received. Preparing crochet items.',
+          timestamp: new Date().toISOString()
+        }
+      ];
+
+      const dbPayload = {
+        id: orderId,
+        date: dateStr,
+        customer: orderPayload.customer,
+        items: orderPayload.items,
+        subtotal: subtotal,
+        shipping_cost: currentShippingCost,
+        total: total,
+        region: state,
+        notes: '',
+        status: 'Pending',
+        location: 'Order received. Preparing crochet items.',
+        history: initialHistory
+      };
+
+      const { data, error } = await supabase
+        .from('orders')
+        .insert([dbPayload])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Map back to camelCase for the app
+      const mapped = { ...data };
+      mapped.shippingCost = parseFloat(data.shipping_cost);
+      delete mapped.shipping_cost;
+      return mapped;
+    } catch (err) {
+      console.warn('Failed to save order to Supabase, using local fallback:', err);
+    }
   }
+
+  // Fallback to local mockup order
+  const randomNum = Math.floor(100000 + Math.random() * 900000);
+  return {
+    id: `CL-2026-${randomNum}`,
+    date: new Date().toLocaleString('en-MY', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    }),
+    customer: orderPayload.customer,
+    items: orderPayload.items,
+    subtotal: subtotal,
+    shippingCost: currentShippingCost,
+    total: total
+  };
 }
 
 // WhatsApp redirect details builder

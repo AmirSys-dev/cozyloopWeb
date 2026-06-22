@@ -301,6 +301,7 @@
       border-radius: 4px;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <!-- Full-Screen Sign-In Overlay -->
@@ -416,7 +417,9 @@
 
             <div class="form-group">
               <label for="image">Upload Image File (jpeg/png/webp, max 2MB)</label>
-              <input id="image" name="image" type="file" accept="image/*" />
+              <input id="image" name="image" type="file" accept="image/*" style="margin-bottom: 8px;" />
+              <label for="imageUrl" style="margin-top: 8px;">Or Image Path/URL (Optional)</label>
+              <input id="imageUrl" name="imageUrl" placeholder="e.g. orange-swiss (local) or https://example.com/image.jpg" />
             </div>
 
             <button type="submit">Publish Creation</button>
@@ -503,26 +506,35 @@
   </div>
 
   <script>
+    // Supabase Configuration
+    const supabaseUrl = 'https://mzlsicmrajabuzmdmnri.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16bHNpY21yYWphYnV6bWRtbnJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NzMzOTIsImV4cCI6MjA5NDI0OTM5Mn0.XdHbz6r0aLXFLuHJmtHFKFwE-8A6K4bRFxM1tHwRz4Q';
+    let supabase = null;
+    if (window.supabase) {
+      supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    }
+
     let ordersList = [];
 
-    // Check sessionStorage on page load to restore authentication state
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedAuth = sessionStorage.getItem('admin_auth');
-      if (savedAuth) {
+    // Check Supabase session on load to bypass the login overlay
+    window.addEventListener('DOMContentLoaded', async () => {
+      if (supabase) {
         try {
-          const decrypted = atob(savedAuth);
-          const [user, pass] = decrypted.split(':');
-          document.getElementById('adminUser').value = user;
-          document.getElementById('adminPass').value = pass;
-          document.getElementById('loginOverlay').style.display = 'none';
-          loadOrdersList(user, pass);
+          const { data: { session }, error } = await supabase.auth.getSession();
+          if (session) {
+            document.getElementById('loginOverlay').style.display = 'none';
+            loadOrdersList();
+          } else {
+            document.getElementById('loginOverlay').style.display = 'flex';
+          }
         } catch (e) {
-          sessionStorage.removeItem('admin_auth');
+          console.warn('Session restoration failed:', e);
+          document.getElementById('loginOverlay').style.display = 'flex';
         }
       }
     });
 
-    // Handle Client-Side Login Overlay Submission
+    // Handle Client-Side Login Overlay Submission via Supabase Auth
     async function handleOverlayLogin(e) {
       e.preventDefault();
       const user = document.getElementById('overlayUser').value.trim();
@@ -536,43 +548,41 @@
         return;
       }
 
+      if (!supabase) {
+        errorDiv.textContent = 'Supabase client is not loaded. Try again later.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      // Auto-completes username to email format (Admin User commitment)
+      const email = user.includes('@') ? user : `${user}@cozyloop.my.id`;
+
       try {
-        const authStr = btoa(user + ':' + pass);
-        // Test credentials by listing orders
-        const res = await fetch('/api/orders', {
-          headers: {
-            'Authorization': 'Basic ' + authStr
-          }
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email,
+          password: pass
         });
-        if (res.ok) {
-          sessionStorage.setItem('admin_auth', authStr);
-          document.getElementById('adminUser').value = user;
-          document.getElementById('adminPass').value = pass;
-          document.getElementById('loginOverlay').style.display = 'none';
-          
-          ordersList = await res.json();
-          renderOrdersTable();
-          showResult('Logged in & synchronized successfully.', true);
-        } else {
-          errorDiv.textContent = 'Invalid credentials. Please try again.';
-          errorDiv.style.display = 'block';
-        }
+        if (error) throw error;
+
+        document.getElementById('loginOverlay').style.display = 'none';
+        loadOrdersList();
+        showResult('Logged in & synchronized successfully.', true);
       } catch (err) {
-        errorDiv.textContent = 'Connection error: ' + err.message;
+        errorDiv.textContent = 'Invalid credentials or login error: ' + err.message;
         errorDiv.style.display = 'block';
       }
     }
 
     // Sign out function to clear session and show login gate
-    function handleSignOut() {
-      sessionStorage.removeItem('admin_auth');
-      document.getElementById('adminUser').value = '';
-      document.getElementById('adminPass').value = '';
+    async function handleSignOut() {
+      if (supabase) {
+        await supabase.auth.signOut();
+      }
       document.getElementById('overlayUser').value = '';
       document.getElementById('overlayPass').value = '';
       document.getElementById('loginOverlay').style.display = 'flex';
       const tbody = document.getElementById('ordersTableBody');
-      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--text-muted); padding:32px;">Please authenticate and click Sync above to load order logs.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--text-muted); padding:32px;">Please authenticate to load order logs.</td></tr>`;
       showResult('Logged out successfully.', true);
     }
 
@@ -587,41 +597,45 @@
       } else {
         document.getElementById('tabBtnOrders').classList.add('active');
         document.getElementById('tabOrders').classList.add('active');
-        // Auto load orders when clicking tab if auth credentials exist
-        const user = document.getElementById('adminUser').value.trim();
-        const pass = document.getElementById('adminPass').value;
-        if (user && pass) {
-          loadOrdersList(user, pass);
-        }
+        loadOrdersList();
       }
     }
 
-    // Authenticate and load everything
+    // Authenticate and load everything (compatibility wrapper)
     function authenticateAndLoad() {
-      const user = document.getElementById('adminUser').value.trim();
-      const pass = document.getElementById('adminPass').value;
-      if (!user || !pass) {
-        showResult('Admin credentials username & password required', false);
-        return;
-      }
-      loadOrdersList(user, pass);
+      loadOrdersList();
     }
 
-    // Load orders list
-    async function loadOrdersList(user, pass) {
+    // Load orders list directly from Supabase
+    async function loadOrdersList() {
+      if (!supabase) return;
       try {
-        const res = await fetch('/api/orders', {
-          headers: {
-            'Authorization': 'Basic ' + btoa(user + ':' + pass)
+        let query = supabase.from('orders').select('*');
+        // Try to order by created_at first, then date
+        let { data: orders, error } = await query.order('created_at', { ascending: false });
+        if (error) {
+          console.warn('created_at sort failed, trying date sort...', error);
+          const fallback = await supabase.from('orders').select('*').order('date', { ascending: false });
+          if (fallback.error) {
+            console.warn('date sort failed, loading unsorted...', fallback.error);
+            const raw = await supabase.from('orders').select('*');
+            if (raw.error) throw raw.error;
+            orders = raw.data;
+          } else {
+            orders = fallback.data;
           }
-        });
-        if (res.ok) {
-          ordersList = await res.json();
-          renderOrdersTable();
-          showResult('Data synchronized successfully. Found ' + ordersList.length + ' orders.', true);
-        } else {
-          showResult('Unauthorized! Check credentials and try again.', false);
         }
+
+        // Map order.shipping_cost to order.shippingCost for UI compatibility
+        ordersList = (orders || []).map(order => {
+          const mapped = { ...order };
+          mapped.shippingCost = parseFloat(order.shipping_cost);
+          delete mapped.shipping_cost;
+          return mapped;
+        });
+
+        renderOrdersTable();
+        showResult('Data synchronized successfully. Found ' + ordersList.length + ' orders.', true);
       } catch (err) {
         showResult('Sync failed: ' + err.message, false);
       }
@@ -636,11 +650,11 @@
       }
 
       tbody.innerHTML = ordersList.map(order => {
-        const waClean = order.customer.phone.replace(/[^0-9]/g, '');
+        const waClean = (order.customer?.phone || '').replace(/[^0-9]/g, '');
         const waLink = waClean.startsWith('60') ? waClean : ('6' + waClean);
-        const statusClass = 'status-' + order.status.toLowerCase();
+        const statusClass = 'status-' + (order.status || 'pending').toLowerCase();
         
-        const itemsList = order.items.map(item => {
+        const itemsList = (order.items || []).map(item => {
           let opts = [];
           if (item.options?.attach && item.options.attach !== 'None') opts.push(item.options.attach);
           if (item.options?.notes) opts.push(item.options.notes);
@@ -650,22 +664,22 @@
         }).join('<br/>');
 
         return `
-          <tr class="order-tr" data-search="${order.id} ${order.customer.name} ${order.customer.phone}">
+          <tr class="order-tr" data-search="${order.id} ${(order.customer?.name || '')} ${(order.customer?.phone || '')}">
             <td style="font-family:var(--font-mono); font-weight:700;">${order.id}</td>
             <td style="color:var(--text-secondary);">${order.date}</td>
             <td>
-              <strong>${order.customer.name}</strong><br/>
+              <strong>${(order.customer?.name || '')}</strong><br/>
               <a href="https://wa.me/${waLink}" target="_blank" style="color:var(--brand-hover); text-decoration:underline; font-family:var(--font-mono); font-size:12px;">
-                ${order.customer.phone}
+                ${(order.customer?.phone || '')}
               </a>
             </td>
             <td>
-              ${order.customer.address},<br/>
-              ${order.customer.postcode} ${order.customer.city},<br/>
-              <strong>${order.customer.state}</strong>
+              ${(order.customer?.address || '')},<br/>
+              ${(order.customer?.postcode || '')} ${(order.customer?.city || '')},<br/>
+              <strong>${(order.customer?.state || '')}</strong>
             </td>
             <td style="line-height:1.4;">${itemsList}</td>
-            <td style="font-family:var(--font-mono); font-weight:700;">RM ${order.total.toFixed(2)}</td>
+            <td style="font-family:var(--font-mono); font-weight:700;">RM ${(order.total || 0).toFixed(2)}</td>
             <td>
               <span class="status-badge ${statusClass}">${order.status}</span>
             </td>
@@ -696,60 +710,64 @@
       });
     }
 
-    // Quick cancel
+    // Quick cancel order directly in Supabase
     async function quickCancelOrder(orderId) {
       if (!confirm('Are you sure you want to cancel order ' + orderId + '?')) return;
-      const user = document.getElementById('adminUser').value.trim();
-      const pass = document.getElementById('adminPass').value;
+      if (!supabase) return;
 
       try {
-        const res = await fetch('/api/orders/' + orderId, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Basic ' + btoa(user + ':' + pass),
-            'X-Requested-With': 'XMLHttpRequest'
-          },
-          body: JSON.stringify({
-            status: 'Cancelled',
-            location: 'Order cancelled by store administrator.'
-          })
+        // Fetch current history
+        const { data: order, error: fetchError } = await supabase
+          .from('orders')
+          .select('history')
+          .eq('id', orderId)
+          .maybeSingle();
+
+        if (fetchError) throw fetchError;
+        if (!order) throw new Error('Order not found');
+
+        const updatedHistory = [...(order.history || [])];
+        updatedHistory.push({
+          status: 'Cancelled',
+          location: 'Order cancelled by store administrator.',
+          timestamp: new Date().toISOString()
         });
-        if (res.ok) {
-          showResult('Order ' + orderId + ' cancelled successfully.', true);
-          loadOrdersList(user, pass);
-        } else {
-          const err = await res.json();
-          showResult('Failed to cancel order: ' + err.error, false);
-        }
+
+        const { error: updateError } = await supabase
+          .from('orders')
+          .update({
+            status: 'Cancelled',
+            location: 'Order cancelled by store administrator.',
+            history: updatedHistory
+          })
+          .eq('id', orderId);
+
+        if (updateError) throw updateError;
+
+        showResult('Order ' + orderId + ' cancelled successfully.', true);
+        loadOrdersList();
       } catch (err) {
-        showResult('Network error: ' + err.message, false);
+        showResult('Failed to cancel order: ' + err.message, false);
       }
     }
 
-    // Delete order
+    // Delete order directly from Supabase
     async function deleteOrderLog(orderId) {
       if (!confirm('WARNING: Are you sure you want to delete order ' + orderId + ' from the database? This cannot be undone.')) return;
-      const user = document.getElementById('adminUser').value.trim();
-      const pass = document.getElementById('adminPass').value;
+      if (!supabase) return;
 
       try {
-        const res = await fetch('/api/orders/' + orderId, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': 'Basic ' + btoa(user + ':' + pass),
-            'X-Requested-With': 'XMLHttpRequest'
-          }
-        });
-        if (res.ok) {
-          showResult('Order ' + orderId + ' deleted from database.', true);
-          loadOrdersList(user, pass);
-        } else {
-          const err = await res.json();
-          showResult('Failed to delete order: ' + err.error, false);
-        }
+        const { error } = await supabase
+          .from('orders')
+          .delete()
+          .eq('id', orderId);
+
+        if (error) throw error;
+
+        showResult('Order ' + orderId + ' deleted from database.', true);
+        loadOrdersList();
       } catch (err) {
-        showResult('Network error: ' + err.message, false);
+        showResult('Failed to delete order: ' + err.message, false);
       }
     }
 
@@ -762,85 +780,147 @@
       document.getElementById('statusModal').style.display = 'flex';
     }
 
+    // Close Modal window
     function closeModal() {
       document.getElementById('statusModal').style.display = 'none';
     }
 
-    // Submit Modal status update
+    // Submit Modal status update directly to Supabase
     document.getElementById('statusUpdateForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const orderId = document.getElementById('modalOrderIdHidden').value;
       const status = document.getElementById('modalStatusSelect').value;
       const location = document.getElementById('modalLocationInput').value.trim();
-      const user = document.getElementById('adminUser').value.trim();
-      const pass = document.getElementById('adminPass').value;
+      if (!supabase) return;
 
       try {
-        const res = await fetch('/api/orders/' + orderId, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Basic ' + btoa(user + ':' + pass),
-            'X-Requested-With': 'XMLHttpRequest'
-          },
-          body: JSON.stringify({ status, location })
+        // Fetch current history
+        const { data: order, error: fetchError } = await supabase
+          .from('orders')
+          .select('history')
+          .eq('id', orderId)
+          .maybeSingle();
+
+        if (fetchError) throw fetchError;
+        if (!order) throw new Error('Order not found');
+
+        const updatedHistory = [...(order.history || [])];
+        updatedHistory.push({
+          status: status,
+          location: location,
+          timestamp: new Date().toISOString()
         });
-        if (res.ok) {
-          closeModal();
-          showResult('Order status successfully updated to ' + status, true);
-          loadOrdersList(user, pass);
-        } else {
-          const err = await res.json();
-          showResult('Failed to update status: ' + err.error, false);
-        }
+
+        const { error: updateError } = await supabase
+          .from('orders')
+          .update({
+            status: status,
+            location: location,
+            history: updatedHistory
+          })
+          .eq('id', orderId);
+
+        if (updateError) throw updateError;
+
+        closeModal();
+        showResult('Order status successfully updated to ' + status, true);
+        loadOrdersList();
       } catch (err) {
-        showResult('Network error: ' + err.message, false);
+        showResult('Failed to update status: ' + err.message, false);
       }
     });
 
-    // Product addition submission (Tab 1)
+    // Product addition submission directly to Supabase (Tab 1)
     const productForm = document.getElementById('productForm');
     productForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      result.className = ''; result.style.display = 'none';
+      const resultBox = document.getElementById('result');
+      resultBox.className = ''; resultBox.style.display = 'none';
 
-      const user = document.getElementById('adminUser').value.trim();
-      const pass = document.getElementById('adminPass').value;
-      if (!user || !pass) { showResult('Admin credentials username & password required', false); return; }
+      if (!supabase) { showResult('Database client not loaded.', false); return; }
 
-      const fd = new FormData();
-      fd.append('id', document.getElementById('prodId').value.trim());
-      fd.append('name', document.getElementById('name').value.trim());
-      fd.append('category', document.getElementById('category').value);
-      fd.append('price', document.getElementById('price').value);
-      fd.append('desc', document.getElementById('desc').value.trim());
-      fd.append('size', document.getElementById('size').value.trim());
-      fd.append('materials', document.getElementById('materials').value.trim());
+      const id = document.getElementById('prodId').value.trim();
+      const name = document.getElementById('name').value.trim();
+      const category = document.getElementById('category').value;
+      const price = parseFloat(document.getElementById('price').value);
+      const desc = document.getElementById('desc').value.trim();
+      const size = document.getElementById('size').value.trim();
+      const materials = document.getElementById('materials').value.trim();
 
-      const fileInput = document.getElementById('image');
-      if (fileInput.files && fileInput.files[0]) fd.append('image', fileInput.files[0]);
+      if (!id || !name || !category || isNaN(price)) {
+        showResult('Missing required fields: id, name, category, price', false);
+        return;
+      }
+
+      const idSafe = id.toLowerCase().replace(/[^a-z0-9\-]/g, '-');
 
       try {
-        const res = await fetch('/api/products', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Basic ' + btoa(user + ':' + pass),
-            'X-Requested-With': 'XMLHttpRequest'
-          },
-          body: fd
-        });
-        const data = await res.json();
-        if (res.ok) {
-          showResult('Product added successfully: ' + data.name, true);
-          productForm.reset();
-        } else {
-          showResult('Error adding product: ' + (data.error || JSON.stringify(data)), false);
+        // Check duplicate
+        const { data: existing, error: checkError } = await supabase
+          .from('products')
+          .select('id')
+          .eq('id', idSafe)
+          .maybeSingle();
+
+        if (checkError) throw checkError;
+        if (existing) {
+          showResult('Product slug ID already exists.', false);
+          return;
         }
+
+        // Handle image upload if a file is selected
+        let imgPath = document.getElementById('imageUrl').value.trim() || idSafe;
+        const fileInput = document.getElementById('image');
+        if (fileInput.files && fileInput.files[0]) {
+          const file = fileInput.files[0];
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${idSafe}.${fileExt}`;
+          const filePath = `uploads/${fileName}`;
+
+          showResult('Uploading product image to Supabase Storage...', true);
+          const { error: uploadError } = await supabase.storage
+            .from('product-images')
+            .upload(filePath, file, { upsert: true });
+
+          if (uploadError) {
+            throw new Error(`Storage upload error: ${uploadError.message}. Make sure a public bucket named 'product-images' is configured in your Supabase dashboard under Storage.`);
+          }
+
+          // Get public URL
+          const { data: publicUrlData } = supabase.storage
+            .from('product-images')
+            .getPublicUrl(filePath);
+
+          imgPath = publicUrlData.publicUrl;
+        }
+
+        const newProduct = {
+          id: idSafe,
+          category,
+          name,
+          img: imgPath,
+          price: price,
+          desc: desc,
+          size: size,
+          materials: materials
+        };
+
+        const { data: insertedProduct, error: insertError } = await supabase
+          .from('products')
+          .insert([newProduct])
+          .select()
+          .single();
+
+        if (insertError) throw insertError;
+
+        showResult('Product added successfully: ' + insertedProduct.name, true);
+        productForm.reset();
       } catch (err) {
-        showResult('Network error: ' + err.message, false);
+        showResult('Error adding product: ' + err.message, false);
       }
     });
 
+    // Helper to display dashboard alerts
     function showResult(msg, ok) {
       const resultBox = document.getElementById('result');
       resultBox.textContent = msg;

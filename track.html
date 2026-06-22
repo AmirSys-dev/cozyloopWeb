@@ -147,6 +147,7 @@
       margin: 0 auto;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -394,25 +395,48 @@
       window.history.pushState({}, '', url);
     }
 
+    // Supabase Configuration
+    const supabaseUrl = 'https://mzlsicmrajabuzmdmnri.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16bHNpY21yYWphYnV6bWRtbnJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NzMzOTIsImV4cCI6MjA5NDI0OTM5Mn0.XdHbz6r0aLXFLuHJmtHFKFwE-8A6K4bRFxM1tHwRz4Q';
+    let supabase = null;
+    if (window.supabase) {
+      supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    }
+
     // Fetch order from API and render
     async function lookupOrder(orderId) {
       const trackError = document.getElementById('trackError');
       trackError.style.display = 'none';
       
+      if (!supabase) {
+        trackError.textContent = 'Database client is not loaded. Try again later.';
+        trackError.style.display = 'block';
+        return;
+      }
+
       try {
-        const res = await fetch(`/api/orders/track/${encodeURIComponent(orderId.toUpperCase())}`);
-        if (!res.ok) {
+        const { data: order, error } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('id', orderId.toUpperCase())
+          .maybeSingle();
+
+        if (error) throw error;
+        if (!order) {
           throw new Error('Order reference ID not found. Double check and try again.');
         }
-        
-        const order = await res.json();
+
+        // Map back to camelCase for UI
+        const mapped = { ...order };
+        mapped.shippingCost = parseFloat(order.shipping_cost);
+        delete mapped.shipping_cost;
         
         // Push ID to URL
         const url = new URL(window.location);
-        url.searchParams.set('id', order.id);
+        url.searchParams.set('id', mapped.id);
         window.history.pushState({}, '', url);
         
-        renderTrackingResult(order);
+        renderTrackingResult(mapped);
       } catch (err) {
         trackError.textContent = err.message;
         trackError.style.display = 'block';
